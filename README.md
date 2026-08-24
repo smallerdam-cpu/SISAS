@@ -59,5 +59,5 @@ Tecnologías: Java 17 (Swing), SQLite, Apache POI, ZXing, BCrypt y jpackage.
 
 ## Creador
 
-Desarrollado por **Smith** — [escribe aquí tu nombre completo],
+Desarrollado por **Roberto Smith Hernandez Ramirez** — [escribe aquí tu nombre completo],
 proyecto de tesis, Quintana Roo, México, 2026.
