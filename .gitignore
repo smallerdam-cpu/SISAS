@@ -1,0 +1,21 @@
+# Datos vivos del sistema (NUNCA subir)
+datos/
+datos_respaldo_previo/
+
+# Compilados y empaquetados
+target/
+instalador/
+dependency-reduced-pom.xml
+
+# VS Code
+.vscode/
+
+# Java / Maven
+.settings/
+.project
+.classpath
+*.class
+
+# Sistema operativo
+Thumbs.db
+.DS_Store

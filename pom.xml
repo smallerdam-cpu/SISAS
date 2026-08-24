@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- pom.xml: Configuración del proyecto SISAS para Maven. -->
+<!-- CONEXIONES: define la estructura que usan todos los paquetes Java:
+     com.seq.sisas.app, com.seq.sisas.ui, com.seq.sisas.modelo, etc. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <!-- Versión del formato de Maven (obligatorio). -->
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- Identificador del proyecto para la SEQ. -->
+    <groupId>com.seq</groupId>          <!-- Organización: Secretaría de Educación. -->
+    <artifactId>sisas</artifactId>      <!-- Nombre del sistema: SISAS. -->
+    <version>0.1.0</version>            <!-- Versión 0: solo entorno. -->
+    <packaging>jar</packaging>          <!-- Se empaquetará como .jar (base del futuro .exe). -->
+
+    <properties>
+        <!-- Usar Java 17, el JDK que ya tienes instalado. -->
+        <maven.compiler.release>17</maven.compiler.release>
+        <!-- Codificación para que los acentos en español no fallen. -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    <build>
+    <plugins>
+        <!-- Shade Plugin: fusiona código y librerías en un solo .jar ejecutable. -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <version>3.5.1</version>
+            <executions>
+                <execution>
+                    <phase>package</phase> <!-- Se ejecuta al empaquetar. -->
+                    <goals>
+                        <goal>shade</goal> <!-- Genera el uber-jar con todo incluido. -->
+                    </goals>
+                    <configuration>
+                        <transformers>
+                            <!-- Declara en el MANIFEST la clase que arranca el sistema. -->
+                            <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                <mainClass>com.seq.sisas.app.Main</mainClass> <!-- Punto de entrada oficial. -->
+                            </transformer>
+                            <!-- Fusiona META-INF/services (necesario para Apache POI). -->
+                            <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                        </transformers>
+                        <filters>
+                            <filter>
+                                <artifact>*:*</artifact>
+                                <excludes>
+                                    <!-- Excluye firmas digitales de librerías para evitar errores al fusionar. -->
+                                    <exclude>META-INF/*.SF</exclude>
+                                    <exclude>META-INF/*.DSA</exclude>
+                                    <exclude>META-INF/*.RSA</exclude>
+                                </excludes>
+                            </filter>
+                        </filters>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
+    <dependencies>
+    <!-- Driver JDBC para SQLite: base de datos local en un archivo, sin servidor. -->
+    <dependency>
+        <groupId>org.xerial</groupId>
+        <artifactId>sqlite-jdbc</artifactId>
+        <version>3.45.3.0</version>
+    </dependency>
+
+    <!-- BCrypt: cifrado seguro de contraseñas (estándar profesional). -->
+    <dependency>
+        <groupId>org.mindrot</groupId>
+        <artifactId>jbcrypt</artifactId>
+        <version>0.4</version>
+    </dependency>
+        <!-- Librería ZXing Core: algoritmo matemático para generar la matriz del QR. -->
+    <dependency>
+        <groupId>com.google.zxing</groupId>
+        <artifactId>core</artifactId>
+        <version>3.5.3</version>
+    </dependency>
+    <!-- Librería ZXing JavaSE: convierte la matriz matemática en una imagen .png. -->
+    <dependency>
+        <groupId>com.google.zxing</groupId>
+        <artifactId>javase</artifactId>
+        <version>3.5.3</version>
+    </dependency>
+
+        <!-- Apache POI: generación de archivos Excel (.xlsx) profesionales. -->
+    <dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi</artifactId>
+        <version>5.2.5</version>
+    </dependency>
+    <!-- POI OOXML: soporte específico para el formato moderno .xlsx. -->
+    <dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi-ooxml</artifactId>
+        <version>5.2.5</version>
+    </dependency>
+</dependencies>
+</project>
