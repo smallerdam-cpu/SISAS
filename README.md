@@ -38,7 +38,7 @@ estudiantes de servicio social, con auditoría y seguridad de nivel instituciona
 
 ## Historia del desarrollo
 
-SISAS nació en 2026 como proyecto de tesis ante la necesidad real del Departamento
+SISAS nació en 2026 como proyecto ante la necesidad real del Departamento
 de sustituir el control manual de asistencia de estudiantes de servicio social.
 Se construyó con la metodología de **versiones incrementales validadas una por una**:
 
@@ -59,5 +59,5 @@ Tecnologías: Java 17 (Swing), SQLite, Apache POI, ZXing, BCrypt y jpackage.
 
 ## Creador
 
-Desarrollado por **Roberto Smith Hernandez Ramirez** — [escribe aquí tu nombre completo],
-proyecto de tesis, Quintana Roo, México, 2026.
+Desarrollado por **Roberto Smith Hernandez Ramirez**,
+proyecto, Quintana Roo, México, 2026.
