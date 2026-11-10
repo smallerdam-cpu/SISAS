@@ -57,6 +57,11 @@ Se construyó con la metodología de **versiones incrementales validadas una por
 
 Tecnologías: Java 17 (Swing), SQLite, Apache POI, ZXing, BCrypt y jpackage.
 
+## Actualizaciones
+
+- 2026-11-10: DialogoEstudiante ("Registrar Estudiante") — vista previa de la foto 120x120 al cargar imagen; campos de texto con tamaño fijo 200x26 (110x26 fecha de nacimiento) que ya no se encogen al cargar la foto; estado de foto corto ("Foto cargada"); diálogo ampliado a 680x620.
+- 2026-11-10: VentanaPrincipal ("SISAS - Panel Principal") — ahora abre a pantalla completa.
+
 ## Creador
 
 Desarrollado por **Roberto Smith Hernandez Ramirez**,

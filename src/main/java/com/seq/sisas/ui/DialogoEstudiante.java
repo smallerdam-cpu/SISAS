@@ -4,14 +4,14 @@ import com.seq.sisas.modelo.Estudiante; // Entidad alumno.
 import com.seq.sisas.servicio.ServicioEstudiante; // Lógica de negocio.
 import java.awt.BorderLayout; // Diseño principal del diálogo.
 import java.awt.Dimension; // Medidas fijas en píxeles.
-import java.awt.FlowLayout; // Diseño en fila que no estira componentes.
+import java.awt.FlowLayout; // Diseño en fila que no estira components.
 import java.awt.GridBagConstraints; // Reglas de colocación de GridBagLayout.
-import java.awt.GridBagLayout; // Diseño que NO estira los componentes.
-import java.awt.Insets; // Márgenes entre componentes.
+import java.awt.GridBagLayout; // Diseño que NO estira los components.
+import java.awt.Insets; // Márgenes entre components.
 import java.awt.event.ActionEvent; // Evento de clic.
 import java.awt.event.ActionListener; // Escuchador de clics.
-import java.io.File; // Archivo de foto seleccionado.
-import java.time.LocalDate; // Fecha para calcular edad.
+import java.io.File; // Archivo de photo seleccionado.
+import java.time.LocalDate; // Fecha para calculator edad.
 import java.time.Period; // Cálculo de años.
 import javax.swing.JButton; // Botón.
 import javax.swing.JDialog; // Ventana modal.
@@ -24,12 +24,14 @@ import javax.swing.JTextField; // Campo de texto.
 import javax.swing.event.DocumentEvent; // Evento de escritura.
 import javax.swing.event.DocumentListener; // Escuchador de escritura.
 import javax.swing.filechooser.FileNameExtensionFilter; // Filtro de tipos de archivo.
+import java.awt.Image; // Imagen para mostrar la photo.
+import javax.swing.ImageIcon; // Icono para mostrar la photo.
 
 /**
  * DialogoEstudiante (V11): formulario con medidas fijas independientes de la ventana.
  * CONEXIONES:
  * - Es abierto por com.seq.sisas.ui.VentanaGestionEstudiantes.
- * - Usa com.seq.sisas.servicio.ServicioEstudiante pasando la foto seleccionada.
+ * - Usa com.seq.sisas.servicio.ServicioEstudiante pasando la photo seleccionada.
  */
 public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
 
@@ -53,6 +55,7 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
     private JTextField txtHoras; // Campo horas (obligatorio).
     private JLabel lblEdad; // Etiqueta de edad en vivo.
     private JLabel lblFotoEstado; // Etiqueta con el nombre de la foto elegida.
+    private JLabel lblFotoPreview; // Etiqueta para mostrar la foto seleccionada.
     private File fotoSeleccionada; // Archivo de imagen elegido (null si no se eligió).
     private ServicioEstudiante servicio; // Lógica de negocio.
     private Integer adminId; // ID del administrador responsable.
@@ -66,31 +69,34 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
         this.estudianteExistente = existente; // Guarda estudiante a editar (o null).
 
         setTitle(existente == null ? "Registrar Estudiante" : "Editar Estudiante"); // Título según modo.
-        setSize(600, 480); // Tamaño inicial del diálogo.
+        setSize(680, 620); // Tamaño inicial del diálogo.
         setLocationRelativeTo(owner); // Centra sobre el padre.
 
         // --- Casillas con medida fija ---
         txtNombre = new JTextField(); // Campo nombre.
-        txtNombre.setPreferredSize(new Dimension(ANCHO_CAMPO, ALTO_CAMPO)); // Medida fija.
+        txtNombre.setPreferredSize(new Dimension(ANCHO_CAMPO, ALTO_CAMPO)); // Vuelve 200x26.
         txtEscuela = new JTextField(); // Campo escuela.
-        txtEscuela.setPreferredSize(new Dimension(ANCHO_CAMPO, ALTO_CAMPO)); // Medida fija.
+        txtEscuela.setPreferredSize(new Dimension(ANCHO_CAMPO, ALTO_CAMPO)); // Vuelve a 200x26.
         txtCurp = new JTextField(); // Campo CURP.
-        txtCurp.setPreferredSize(new Dimension(ANCHO_CAMPO, ALTO_CAMPO)); // Medida fija.
+        txtCurp.setPreferredSize(new Dimension(ANCHO_CAMPO, ALTO_CAMPO)); // Vuelve a 200x26.
         txtFechaNacimiento = new JTextField(); // Campo fecha nac.
-        txtFechaNacimiento.setPreferredSize(new Dimension(ANCHO_CAMPO_FECHA, ALTO_CAMPO)); // Medida fija más angosta.
+        txtFechaNacimiento.setPreferredSize(new Dimension(ANCHO_CAMPO_FECHA, ALTO_CAMPO)); // Vuelve a 110x26.
         txtDireccion = new JTextField(); // Campo dirección.
-        txtDireccion.setPreferredSize(new Dimension(ANCHO_CAMPO, ALTO_CAMPO)); // Medida fija.
+        txtDireccion.setPreferredSize(new Dimension(ANCHO_CAMPO, ALTO_CAMPO)); // Vuelve a 200x26.
         txtContacto = new JTextField(); // Campo contacto.
-        txtContacto.setPreferredSize(new Dimension(ANCHO_CAMPO, ALTO_CAMPO)); // Medida fija.
+        txtContacto.setPreferredSize(new Dimension(ANCHO_CAMPO, ALTO_CAMPO)); // Vuelve a 200x26.
         txtFecha = new JTextField(); // Campo fecha ingreso.
-        txtFecha.setPreferredSize(new Dimension(ANCHO_CAMPO, ALTO_CAMPO)); // Medida fija.
+        txtFecha.setPreferredSize(new Dimension(ANCHO_CAMPO, ALTO_CAMPO)); // Vuelve a 200x26.
         txtHoras = new JTextField(); // Campo horas.
-        txtHoras.setPreferredSize(new Dimension(ANCHO_CAMPO, ALTO_CAMPO)); // Medida fija.
+        txtHoras.setPreferredSize(new Dimension(ANCHO_CAMPO, ALTO_CAMPO)); // Vuelve a 200x26.
         lblEdad = new JLabel("Edad: -"); // Etiqueta de edad inicial.
 
         JButton btnFoto = new JButton("Cargar foto (opcional)"); // Botón para elegir imagen.
         btnFoto.setPreferredSize(new Dimension(ANCHO_BOTON_FOTO, ALTO_BOTON)); // Medida fija.
         lblFotoEstado = new JLabel("Sin foto"); // Estado inicial sin foto.
+        lblFotoPreview = new JLabel(); // Etiqueta para mostrar la foto seleccionada.
+        lblFotoPreview.setPreferredSize(new Dimension(120, 120)); // Tamaño fijo de la vista previa.
+        lblFotoPreview.setBorder(javax.swing.BorderFactory.createEtchedBorder()); // Borde para la vista previa.
 
         // Si es edición, pre-llena los campos y muestra la foto actual.
         if (existente != null) { // Modo edición.
@@ -122,7 +128,8 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
                 int resultado = selector.showOpenDialog(DialogoEstudiante.this); // Abre diálogo de selección.
                 if (resultado == JFileChooser.APPROVE_OPTION) { // Si eligió archivo...
                     fotoSeleccionada = selector.getSelectedFile(); // Guarda el archivo en memoria.
-                    lblFotoEstado.setText("Foto: " + fotoSeleccionada.getName()); // Muestra el nombre elegido.
+                    lblFotoEstado.setText("Foto cargada: "); // Muestra el nombre elegido.
+                    mostrarFoto(fotoSeleccionada); // Muestra la foto en la vista previa.
                 } // Fin de validación de opción.
             } // Fin de actionPerformed.
         }); // Fin del listener.
@@ -186,6 +193,11 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
         gbc.gridx = 1; gbc.anchor = GridBagConstraints.WEST; // Panel a la izquierda.
         panelCampos.add(panelFoto, gbc); // Fila botón + estado de foto.
 
+        gbc.gridx = 0; gbc.gridy = 9; gbc.anchor = GridBagConstraints.EAST; // Etiqueta a la derecha.
+        panelCampos.add(new JLabel("Vista previa:"), gbc); // Etiqueta vista previa.
+        gbc.gridx = 1; gbc.anchor = GridBagConstraints.WEST; // Etiqueta a la izquierda.
+        panelCampos.add(lblFotoPreview, gbc); // Muestra la foto seleccionada 120x120.
+
         // --- Botones inferiores con medida fija ---
         JButton btnGuardar = new JButton("Guardar"); // Botón guardar.
         btnGuardar.setPreferredSize(new Dimension(ANCHO_BOTON, ALTO_BOTON)); // Medida fija.
@@ -219,6 +231,16 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
             lblEdad.setText("Edad: -"); // ...muestra guion.
         } // Fin del catch.
     } // Fin de calcularEdad.
+
+    //Escala la Foto a 120x120 y la muestra en lblFotoPreview
+    private void mostrarFoto(File foto) { // Muestra la foto en la vista previa.
+        ImageIcon original = new ImageIcon(foto.getAbsolutePath()); // Carga la imagen.
+        Image escala = original.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH); // Escala suavemente.
+        lblFotoPreview.setIcon(new ImageIcon(escala)); // Muestra la imagen escalada.
+        lblFotoPreview.revalidate(); // Refresca el componente.
+        lblFotoPreview.repaint(); // Repinta el componente.
+        
+    } // Fin de mostrarFoto.
 
     // Valida obligatorios y guarda (nuevo o edición) pasando la foto al servicio.
     private void guardar() { // Procesa el guardado.

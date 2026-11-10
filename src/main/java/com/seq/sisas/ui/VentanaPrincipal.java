@@ -15,7 +15,7 @@ import javax.swing.JMenuItem; // Opción dentro de un menú.
  * CONEXIONES:
  * - Recibe Administrador de com.seq.sisas.ui.VentanaLogin.
  * - Desde la barra abre: VentanaGestionEstudiantes, kiosco VentanaAsistencia,
- *   VentanaReportes, DialogoAyuda y DialogoAcercaDe.
+ *   VentanaReporters, DialogoAyuda y DialogoAcercaDe.
  */
 public class VentanaPrincipal extends JFrame { // Hereda de JFrame.
 
@@ -26,9 +26,10 @@ public class VentanaPrincipal extends JFrame { // Hereda de JFrame.
         //this.adminLogueado = adminLogueado; // Guarda al admin.
 
         setTitle("SISAS - Panel Principal"); // Título.
-        setSize(800, 450); // Tamaño inicial ordenado y ligero.
+        //setSize(800, 450); // Tamaño initial ordenado y ligero.
+        setExtendedState(JFrame.MAXIMIZED_BOTH); // Pantalla completa.
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Cierra todo al salir.
-        setLocationRelativeTo(null); // Centra en pantalla.
+        //setLocationRelativeTo(null); // Centra en pantalla.
 
         // --- Barra de menú superior: todas las opciones al lado de Ayuda ---
         JMenuBar barraMenu = new JMenuBar(); // Barra estilo SIOSAD.
