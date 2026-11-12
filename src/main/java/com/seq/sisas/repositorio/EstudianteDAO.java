@@ -13,18 +13,24 @@ import java.util.List; // Interfaz de listas.
  * EstudianteDAO (V7): persistencia completa incluyendo fotografía.
  * CONEXIONES:
  * - Usa com.seq.sisas.db.ConexionDB.
- * - Es llamada por com.seq.sisas.servicio.ServicioEstudiante y ServicioAsistencia.
+ * - Es llamada por com.seq.sisas.servicio.ServicioEstudiante y
+ * ServicioAsistencia.
  */
 public class EstudianteDAO { // Clase DAO.
 
     // Lista de columnas completa reutilizada en todos los SELECT.
-    private static final String COLUMNAS = "id, nombre_completo, escuela, contacto, fecha_ingreso, horas_requeridas, horas_acumuladas, codigo_unico, estado, curp, fecha_nacimiento, direccion, foto"; // Columnas de la tabla.
+    private static final String COLUMNAS = "id, nombre_completo, escuela, contacto, fecha_ingreso, horas_requeridas, horas_acumuladas, codigo_unico, estado, curp, fecha_nacimiento, direccion, foto, institucion_id, nivel, tipo_servicio, matricula, especialidad, fecha_fin"; // Columnas
+                                                                                                                                                                                                                                                                                 // de
+                                                                                                                                                                                                                                                                                 // la
+                                                                                                                                                                                                                                                                                 // tabla.
 
     // Inserta un nuevo estudiante con todos sus campos.
     public void insertar(Estudiante e) throws SQLException { // Lanza error si falla.
-        String sql = "INSERT INTO estudiantes (nombre_completo, escuela, contacto, fecha_ingreso, horas_requeridas, codigo_unico, curp, fecha_nacimiento, direccion, foto) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; // Query INSERT completo.
+        String sql = "INSERT INTO estudiantes (nombre_completo, escuela, contacto, fecha_ingreso, horas_requeridas, codigo_unico, curp, fecha_nacimiento, direccion, foto) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; // Query
+                                                                                                                                                                                                                   // INSERT
+                                                                                                                                                                                                                   // completo.
         try (Connection con = ConexionDB.conectar(); // Abre conexión.
-             PreparedStatement ps = con.prepareStatement(sql)) { // Prepara query.
+                PreparedStatement ps = con.prepareStatement(sql)) { // Prepara query.
             ps.setString(1, e.getNombreCompleto()); // Asigna nombre.
             ps.setString(2, e.getEscuela()); // Asigna escuela.
             ps.setString(3, e.getContacto()); // Asigna contacto.
@@ -44,9 +50,11 @@ public class EstudianteDAO { // Clase DAO.
         List<Estudiante> lista = new ArrayList<>(); // Lista vacía.
         String sql = "SELECT " + COLUMNAS + " FROM estudiantes ORDER BY id"; // Query completa.
         try (Connection con = ConexionDB.conectar(); // Abre conexión.
-             PreparedStatement ps = con.prepareStatement(sql); // Prepara query.
-             ResultSet rs = ps.executeQuery()) { // Ejecuta consulta.
-            while (rs.next()) { lista.add(mapear(rs)); } // Convierte y agrega cada fila.
+                PreparedStatement ps = con.prepareStatement(sql); // Prepara query.
+                ResultSet rs = ps.executeQuery()) { // Ejecuta consulta.
+            while (rs.next()) {
+                lista.add(mapear(rs));
+            } // Convierte y agrega cada fila.
         } // Cierra recursos.
         return lista; // Devuelve la lista.
     } // Fin de obtenerTodos.
@@ -55,10 +63,12 @@ public class EstudianteDAO { // Clase DAO.
     public Estudiante obtenerPorCodigo(String codigo) throws SQLException { // Lanza error si falla.
         String sql = "SELECT " + COLUMNAS + " FROM estudiantes WHERE codigo_unico = ?"; // Query por código.
         try (Connection con = ConexionDB.conectar(); // Abre conexión.
-             PreparedStatement ps = con.prepareStatement(sql)) { // Prepara query.
+                PreparedStatement ps = con.prepareStatement(sql)) { // Prepara query.
             ps.setString(1, codigo); // Código a buscar.
             try (ResultSet rs = ps.executeQuery()) { // Ejecuta consulta.
-                if (rs.next()) { return mapear(rs); } // Devuelve si existe.
+                if (rs.next()) {
+                    return mapear(rs);
+                } // Devuelve si existe.
             } // Cierra ResultSet.
         } // Cierra recursos.
         return null; // Código inexistente.
@@ -68,10 +78,12 @@ public class EstudianteDAO { // Clase DAO.
     public Estudiante obtenerPorCurp(String curp) throws SQLException { // Lanza error si falla.
         String sql = "SELECT " + COLUMNAS + " FROM estudiantes WHERE curp = ?"; // Query por CURP.
         try (Connection con = ConexionDB.conectar(); // Abre conexión.
-             PreparedStatement ps = con.prepareStatement(sql)) { // Prepara query.
+                PreparedStatement ps = con.prepareStatement(sql)) { // Prepara query.
             ps.setString(1, curp); // CURP a buscar.
             try (ResultSet rs = ps.executeQuery()) { // Ejecuta consulta.
-                if (rs.next()) { return mapear(rs); } // Devuelve si existe.
+                if (rs.next()) {
+                    return mapear(rs);
+                } // Devuelve si existe.
             } // Cierra ResultSet.
         } // Cierra recursos.
         return null; // CURP libre.
@@ -79,15 +91,19 @@ public class EstudianteDAO { // Clase DAO.
 
     // Busca por nombre, apellidos o CURP (coincidencia parcial).
     public List<Estudiante> buscar(String criterio) throws SQLException { // Lanza error si falla.
-        String sql = "SELECT " + COLUMNAS + " FROM estudiantes WHERE nombre_completo LIKE ? OR curp LIKE ? ORDER BY nombre_completo"; // Query con LIKE.
+        String sql = "SELECT " + COLUMNAS
+                + " FROM estudiantes WHERE nombre_completo LIKE ? OR curp LIKE ? ORDER BY nombre_completo"; // Query con
+                                                                                                            // LIKE.
         String patron = "%" + criterio + "%"; // Comodines de coincidencia parcial.
         List<Estudiante> lista = new ArrayList<>(); // Lista vacía.
         try (Connection con = ConexionDB.conectar(); // Abre conexión.
-             PreparedStatement ps = con.prepareStatement(sql)) { // Prepara query.
+                PreparedStatement ps = con.prepareStatement(sql)) { // Prepara query.
             ps.setString(1, patron); // Parámetro para nombre.
             ps.setString(2, patron); // Parámetro para CURP.
             try (ResultSet rs = ps.executeQuery()) { // Ejecuta consulta.
-                while (rs.next()) { lista.add(mapear(rs)); } // Agrega coincidencias.
+                while (rs.next()) {
+                    lista.add(mapear(rs));
+                } // Agrega coincidencias.
             } // Cierra ResultSet.
         } // Cierra recursos.
         return lista; // Devuelve coincidencias.
@@ -95,9 +111,17 @@ public class EstudianteDAO { // Clase DAO.
 
     // Actualiza los datos editables incluyendo la foto.
     public void actualizar(Estudiante e) throws SQLException { // Lanza error si falla.
-        String sql = "UPDATE estudiantes SET nombre_completo=?, escuela=?, contacto=?, fecha_ingreso=?, horas_requeridas=?, curp=?, fecha_nacimiento=?, direccion=?, foto=? WHERE id=?"; // Query UPDATE completo.
+        String sql = "UPDATE estudiantes SET nombre_completo=?, escuela=?, contacto=?, fecha_ingreso=?, horas_requeridas=?, curp=?, fecha_nacimiento=?, direccion=?, foto=?, institucion_id=?, nivel=?, tipo_servicio=?, matricula=?, especialidad=?, fecha_fin=? WHERE id=?"; // Query
+                                                                                                                                                                                                                                                                               // UPDATE
+                                                                                                                                                                                                                                                                               // completo.foto=?
+                                                                                                                                                                                                                                                                               // WHERE
+                                                                                                                                                                                                                                                                               // id=?";
+                                                                                                                                                                                                                                                                               // //
+                                                                                                                                                                                                                                                                               // Query
+                                                                                                                                                                                                                                                                               // UPDATE
+                                                                                                                                                                                                                                                                               // completo.
         try (Connection con = ConexionDB.conectar(); // Abre conexión.
-             PreparedStatement ps = con.prepareStatement(sql)) { // Prepara query.
+                PreparedStatement ps = con.prepareStatement(sql)) { // Prepara query.
             ps.setString(1, e.getNombreCompleto()); // Nuevo nombre.
             ps.setString(2, e.getEscuela()); // Nueva escuela.
             ps.setString(3, e.getContacto()); // Nuevo contacto.
@@ -107,8 +131,13 @@ public class EstudianteDAO { // Clase DAO.
             ps.setString(7, e.getFechaNacimiento()); // Nueva fecha nac.
             ps.setString(8, e.getDireccion()); // Nueva dirección.
             ps.setString(9, e.getFoto()); // Nuevo nombre de foto.
-            ps.setInt(10, e.getId()); // ID a actualizar.
-            ps.executeUpdate(); // Ejecuta actualización.
+            ps.setInt(10, e.getInstitucionId()); // Nueva FK institución.
+            ps.setString(11, e.getNivel()); // Nuevo nivel.
+            ps.setString(12, e.getTipoServicio()); // Nuevo tipo de servicio.
+            ps.setString(13, e.getMatricula()); // Nueva matrícula.
+            ps.setString(14, e.getEspecialidad()); // Nueva especialidad.
+            ps.setString(15, e.getFechaFin()); // Nuevo fin del periodo.
+            ps.setInt(16, e.getId()); // ID a actualizar. // Ejecuta actualización.
         } // Cierra recursos.
     } // Fin de actualizar.
 
@@ -116,7 +145,7 @@ public class EstudianteDAO { // Clase DAO.
     public void cambiarEstado(int id, String estado) throws SQLException { // Lanza error si falla.
         String sql = "UPDATE estudiantes SET estado=? WHERE id=?"; // Query de estado.
         try (Connection con = ConexionDB.conectar(); // Abre conexión.
-             PreparedStatement ps = con.prepareStatement(sql)) { // Prepara query.
+                PreparedStatement ps = con.prepareStatement(sql)) { // Prepara query.
             ps.setString(1, estado); // Nuevo estado.
             ps.setInt(2, id); // ID del estudiante.
             ps.executeUpdate(); // Ejecuta actualización.
@@ -127,7 +156,7 @@ public class EstudianteDAO { // Clase DAO.
     public void sumarHoras(int id, double horas) throws SQLException { // Lanza error si falla.
         String sql = "UPDATE estudiantes SET horas_acumuladas = horas_acumuladas + ? WHERE id=?"; // Query de suma.
         try (Connection con = ConexionDB.conectar(); // Abre conexión.
-             PreparedStatement ps = con.prepareStatement(sql)) { // Prepara query.
+                PreparedStatement ps = con.prepareStatement(sql)) { // Prepara query.
             ps.setDouble(1, horas); // Horas a sumar.
             ps.setInt(2, id); // ID del estudiante.
             ps.executeUpdate(); // Ejecuta actualización.
@@ -150,37 +179,48 @@ public class EstudianteDAO { // Clase DAO.
         e.setFechaNacimiento(rs.getString("fecha_nacimiento")); // Mapea fecha nac.
         e.setDireccion(rs.getString("direccion")); // Mapea dirección.
         e.setFoto(rs.getString("foto")); // Mapea nombre de foto.
+        e.setFoto(rs.getString("foto")); // Mapea nombre de foto.
+        e.setInstitucionId(rs.getInt("institucion_id")); // Mapea FK institución.
+        e.setNivel(rs.getString("nivel")); // Mapea nivel.
+        e.setTipoServicio(rs.getString("tipo_servicio")); // Mapea tipo de servicio.
+        e.setMatricula(rs.getString("matricula")); // Mapea matrícula.
+        e.setEspecialidad(rs.getString("especialidad")); // Mapea especialidad.
+        e.setFechaFin(rs.getString("fecha_fin")); // Mapea fin del periodo.
         return e; // Devuelve el objeto lleno.
     } // Fin de mapear.
 
-        // Devuelve un estudiante por su folio (ID).
+    // Devuelve un estudiante por su folio (ID).
     public Estudiante obtenerPorId(int id) throws SQLException { // Lanza error si falla.
         String sql = "SELECT " + COLUMNAS + " FROM estudiantes WHERE id = ?"; // Query por folio.
         try (Connection con = ConexionDB.conectar(); // Abre conexión.
-             PreparedStatement ps = con.prepareStatement(sql)) { // Prepara query.
+                PreparedStatement ps = con.prepareStatement(sql)) { // Prepara query.
             ps.setInt(1, id); // Folio a buscar.
             try (ResultSet rs = ps.executeQuery()) { // Ejecuta consulta.
-                if (rs.next()) { return mapear(rs); } // Devuelve si existe.
+                if (rs.next()) {
+                    return mapear(rs);
+                } // Devuelve si existe.
             } // Cierra ResultSet.
         } // Cierra recursos.
         return null; // Folio inexistente.
     } // Fin de obtenerPorId.
 
-    // Elimina todas las asistencias de un estudiante (borra su rastro de movimientos).
+    // Elimina todas las asistencias de un estudiante (borra su rastro de
+    // movimientos).
     public void eliminarAsistenciasPorEstudiante(int id) throws SQLException { // Lanza error si falla.
         String sql = "DELETE FROM asistencias WHERE estudiante_id = ?"; // Query de borrado en cascada.
         try (Connection con = ConexionDB.conectar(); // Abre conexión.
-             PreparedStatement ps = con.prepareStatement(sql)) { // Prepara query.
+                PreparedStatement ps = con.prepareStatement(sql)) { // Prepara query.
             ps.setInt(1, id); // Folio del estudiante.
             ps.executeUpdate(); // Ejecuta el borrado de movimientos.
         } // Cierra recursos.
     } // Fin de eliminarAsistenciasPorEstudiante.
 
-    // Elimina el registro del estudiante. Su folio jamás será reutilizado (AUTOINCREMENT).
+    // Elimina el registro del estudiante. Su folio jamás será reutilizado
+    // (AUTOINCREMENT).
     public void eliminar(int id) throws SQLException { // Lanza error si falla.
         String sql = "DELETE FROM estudiantes WHERE id = ?"; // Query de borrado del registro.
         try (Connection con = ConexionDB.conectar(); // Abre conexión.
-             PreparedStatement ps = con.prepareStatement(sql)) { // Prepara query.
+                PreparedStatement ps = con.prepareStatement(sql)) { // Prepara query.
             ps.setInt(1, id); // Folio a retirar.
             ps.executeUpdate(); // Ejecuta el borrado.
         } // Cierra recursos.
