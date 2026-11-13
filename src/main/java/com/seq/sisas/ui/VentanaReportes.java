@@ -26,7 +26,8 @@ import javax.swing.event.DocumentListener; // Escuchador de escritura en vivo.
 import javax.swing.table.DefaultTableModel; // Modelo de la tabla.
 
 /**
- * VentanaReportes (V11): controles con medidas fijas; tabla de movimientos adaptable.
+ * VentanaReportes (V11): controles con medidas fijas; tabla de movimientos
+ * adaptable.
  * CONEXIONES:
  * - Es abierta por com.seq.sisas.ui.VentanaPrincipal.
  * - Usa ServicioEstudiante para buscar alumnos y llenar el combo.
@@ -61,7 +62,7 @@ public class VentanaReportes extends JFrame { // Hereda de JFrame.
         this.servicioReportes = new ServicioReportes(); // Inicializa servicio de reportes.
         this.servicioEstudiante = new ServicioEstudiante(); // Inicializa servicio de alumnos.
 
-        setTitle("SISAS - Reportes y Excel"); // Título de la ventana.
+        setTitle("SISAS - Reportes"); // Título de la ventana.
         setSize(1200, 800); // Tamaño inicial de la ventana.
         setLocationRelativeTo(null); // Centra en pantalla.
 
@@ -80,8 +81,6 @@ public class VentanaReportes extends JFrame { // Hereda de JFrame.
 
         JButton btnConsultar = new JButton("Consultar"); // Botón de consulta.
         btnConsultar.setPreferredSize(new Dimension(ANCHO_BOTON, ALTO_BOTON)); // Medida fija.
-        JButton btnExportar = new JButton("Exportar Excel"); // Botón de exportación.
-        btnExportar.setPreferredSize(new Dimension(ANCHO_BOTON, ALTO_BOTON)); // Medida fija.
         JButton btnVistaPrevia = new JButton("Vista Previa"); // Botón que abre la hoja oficial.
         btnVistaPrevia.setPreferredSize(new Dimension(ANCHO_BOTON, ALTO_BOTON)); // Medida fija.
 
@@ -95,7 +94,7 @@ public class VentanaReportes extends JFrame { // Hereda de JFrame.
         panelSuperior.add(new JLabel("Hasta:")); // Etiqueta fecha final.
         panelSuperior.add(txtHasta); // Agrega campo hasta.
         panelSuperior.add(btnConsultar); // Agrega botón consultar.
-        panelSuperior.add(btnExportar); // Agrega botón exportar.
+        // panelSuperior.add(btnExportar); // Agrega botón exportar.
         panelSuperior.add(btnVistaPrevia); // Agrega botón de vista previa.
 
         // --- Tabla de movimientos (zona de datos: sí se adapta a la ventana) ---
@@ -105,7 +104,7 @@ public class VentanaReportes extends JFrame { // Hereda de JFrame.
                 return false; // Solo lectura visual.
             } // Fin de isCellEditable.
         }; // Fin del modelo anónimo.
-        modelo.setColumnIdentifiers(new String[]{"Fecha", "Entrada", "Salida", "Minutos", "Estado"}); // Encabezados.
+        modelo.setColumnIdentifiers(new String[] { "Fecha", "Entrada", "Salida", "Minutos", "Estado" }); // Encabezados.
         tabla = new JTable(modelo); // Crea la tabla.
         tabla.setRowHeight(ALTO_FILA_TABLA); // Alto de fila fijo para lectura cómoda.
         JScrollPane scroll = new JScrollPane(tabla); // Scroll para muchos registros.
@@ -116,27 +115,39 @@ public class VentanaReportes extends JFrame { // Hereda de JFrame.
 
         // La búsqueda recarga el combo de estudiantes en vivo con cada tecla.
         txtBusqueda.getDocument().addDocumentListener(new DocumentListener() { // Listener de escritura.
-            @Override public void insertUpdate(DocumentEvent e) { actualizarCombo(); } // Al escribir.
-            @Override public void removeUpdate(DocumentEvent e) { actualizarCombo(); } // Al borrar.
-            @Override public void changedUpdate(DocumentEvent e) { actualizarCombo(); } // Al cambiar.
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                actualizarCombo();
+            } // Al escribir.
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                actualizarCombo();
+            } // Al borrar.
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                actualizarCombo();
+            } // Al cambiar.
         }); // Fin del DocumentListener.
 
         btnConsultar.addActionListener(new ActionListener() { // Escucha clic en consultar.
             @Override
-            public void actionPerformed(ActionEvent e) { consultar(); } // Ejecuta la consulta.
+            public void actionPerformed(ActionEvent e) {
+                consultar();
+            } // Ejecuta la consulta.
         }); // Fin del listener.
 
-        btnExportar.addActionListener(new ActionListener() { // Escucha clic en exportar.
+        btnVistaPrevia.addActionListener(new ActionListener() { // Escucha clic en vista previa.
             @Override
-            public void actionPerformed(ActionEvent e) { exportar(); } // Genera el Excel.
-        }); // Fin del listener.
-                btnVistaPrevia.addActionListener(new ActionListener() { // Escucha clic en vista previa.
-            @Override
-            public void actionPerformed(ActionEvent e) { abrirVistaPrevia(); } // Abre el visor oficial.
+            public void actionPerformed(ActionEvent e) {
+                abrirVistaPrevia();
+            } // Abre el visor oficial.
         }); // Fin del listener.
     } // Fin del constructor.
 
-    // Rellena el combo con todos los alumnos o con las coincidencias de la búsqueda.
+    // Rellena el combo con todos los alumnos o con las coincidencias de la
+    // búsqueda.
     private void actualizarCombo() { // Recarga el combo.
         try { // Intenta leer la BD.
             String filtro = txtBusqueda.getText().trim(); // Lee el criterio.
@@ -147,19 +158,27 @@ public class VentanaReportes extends JFrame { // Hereda de JFrame.
             } // Fin de evaluación de filtro.
             comboEstudiantes.removeAllItems(); // Limpia el combo.
             for (Estudiante e : listaEstudiantes) { // Recorre resultados.
-                comboEstudiantes.addItem(e.getNombreCompleto() + " [" + e.getCurp() + "]"); // Muestra nombre y CURP en la opción.
+                comboEstudiantes.addItem(e.getNombreCompleto() + " [" + e.getCurp() + "]"); // Muestra nombre y CURP en
+                                                                                            // la opción.
             } // Fin del recorrido.
-            if (comboEstudiantes.getItemCount() > 0) { comboEstudiantes.setSelectedIndex(0); } // Selecciona el primero si hay resultados.
+            if (comboEstudiantes.getItemCount() > 0) {
+                comboEstudiantes.setSelectedIndex(0);
+            } // Selecciona el primero si hay resultados.
         } catch (SQLException ex) { // Captura error de BD.
-            JOptionPane.showMessageDialog(this, "Error al buscar estudiantes: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); // Muestra error.
+            JOptionPane.showMessageDialog(this, "Error al buscar estudiantes: " + ex.getMessage(), "Error",
+                    JOptionPane.ERROR_MESSAGE); // Muestra error.
         } // Fin del catch.
     } // Fin de actualizarCombo.
 
     // Devuelve el estudiante seleccionado en el combo, o null si no hay.
     private Estudiante obtenerSeleccionado() { // Obtiene selección del combo.
-        if (listaEstudiantes == null || listaEstudiantes.isEmpty()) { return null; } // No hay resultados.
+        if (listaEstudiantes == null || listaEstudiantes.isEmpty()) {
+            return null;
+        } // No hay resultados.
         int indice = comboEstudiantes.getSelectedIndex(); // Índice seleccionado.
-        if (indice < 0 || indice >= listaEstudiantes.size()) { return null; } // Protección de índices.
+        if (indice < 0 || indice >= listaEstudiantes.size()) {
+            return null;
+        } // Protección de índices.
         return listaEstudiantes.get(indice); // Devuelve el objeto sincronizado.
     } // Fin de obtenerSeleccionado.
 
@@ -167,43 +186,36 @@ public class VentanaReportes extends JFrame { // Hereda de JFrame.
     private void consultar() { // Ejecuta la consulta.
         Estudiante sel = obtenerSeleccionado(); // Obtiene alumno del combo.
         if (sel == null) { // Si no hay alumnos...
-            JOptionPane.showMessageDialog(this, "No hay estudiantes que coincidan con la busqueda.", "Aviso", JOptionPane.WARNING_MESSAGE); // ...avisa.
+            JOptionPane.showMessageDialog(this, "No hay estudiantes que coincidan con la busqueda.", "Aviso",
+                    JOptionPane.WARNING_MESSAGE); // ...avisa.
             return; // Corta ejecución.
         } // Fin de validación.
         try { // Intenta consultar la BD.
-            listaAsistencias = servicioReportes.obtenerAsistencias(sel.getId(), txtDesde.getText().trim(), txtHasta.getText().trim()); // Consulta con filtros.
+            listaAsistencias = servicioReportes.obtenerAsistencias(sel.getId(), txtDesde.getText().trim(),
+                    txtHasta.getText().trim()); // Consulta con filtros.
             modelo.setRowCount(0); // Limpia la tabla visual.
             int totalMinutos = 0; // Acumulador de minutos.
             for (Asistencia a : listaAsistencias) { // Recorre cada movimiento.
-                modelo.addRow(new Object[]{a.getFecha(), a.getHoraEntrada(), a.getHoraSalida() == null ? "EN CURSO" : a.getHoraSalida(), a.getMinutos(), a.getEstado()}); // Agrega fila visual.
+                modelo.addRow(new Object[] { a.getFecha(), a.getHoraEntrada(),
+                        a.getHoraSalida() == null ? "EN CURSO" : a.getHoraSalida(), a.getMinutos(), a.getEstado() }); // Agrega
+                                                                                                                      // fila
+                                                                                                                      // visual.
                 totalMinutos += a.getMinutos(); // Suma minutos.
             } // Fin del recorrido.
-            lblTotal.setText("Total del periodo: " + totalMinutos + " min (" + String.format("%.2f", totalMinutos / 60.0) + " hrs)"); // Muestra total.
+            lblTotal.setText("Total del periodo: " + totalMinutos + " min ("
+                    + String.format("%.2f", totalMinutos / 60.0) + " hrs)"); // Muestra total.
         } catch (SQLException ex) { // Captura error de BD.
-            JOptionPane.showMessageDialog(this, "Error al consultar: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); // Muestra error.
+            JOptionPane.showMessageDialog(this, "Error al consultar: " + ex.getMessage(), "Error",
+                    JOptionPane.ERROR_MESSAGE); // Muestra error.
         } // Fin del catch.
     } // Fin de consultar.
 
-    // Genera el archivo Excel con la consulta actual.
-    private void exportar() { // Ejecuta la exportación.
-        Estudiante sel = obtenerSeleccionado(); // Obtiene alumno del combo.
-        if (sel == null || listaAsistencias == null || listaAsistencias.isEmpty()) { // Si no hay consulta previa...
-            JOptionPane.showMessageDialog(this, "Primero presione Consultar para generar datos.", "Aviso", JOptionPane.WARNING_MESSAGE); // ...avisa.
-            return; // Corta ejecución.
-        } // Fin de validación.
-        try { // Intenta generar el archivo.
-            String ruta = servicioReportes.exportarExcel(sel, listaAsistencias); // Llama al servicio con POI.
-            JOptionPane.showMessageDialog(this, "Reporte generado en:\n" + ruta, "Éxito", JOptionPane.INFORMATION_MESSAGE); // Muestra ruta.
-        } catch (Exception ex) { // Captura cualquier error.
-            JOptionPane.showMessageDialog(this, "Error al exportar: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); // Muestra error.
-        } // Fin del catch.
-    } // Fin de exportar.
-
-        // Abre la vista previa con el alumno y los movimientos consultados.
+    // Abre la vista previa con el alumno y los movimientos consultados.
     private void abrirVistaPrevia() { // Valida y abre el visor.
         Estudiante sel = obtenerSeleccionado(); // Obtiene alumno del combo.
         if (sel == null || listaAsistencias == null || listaAsistencias.isEmpty()) { // Si no hay consulta previa...
-            JOptionPane.showMessageDialog(this, "Primero presione Consultar para generar la hoja.", "Aviso", JOptionPane.WARNING_MESSAGE); // ...avisa.
+            JOptionPane.showMessageDialog(this, "Primero presione Consultar para generar la hoja.", "Aviso",
+                    JOptionPane.WARNING_MESSAGE); // ...avisa.
             return; // Corta ejecución.
         } // Fin de validación.
         new DialogoVistaPrevia(this, sel, listaAsistencias).setVisible(true); // Abre la hoja oficial.

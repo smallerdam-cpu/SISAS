@@ -18,13 +18,11 @@ import javax.swing.JPanel; // Panel que se dibuja a sí mismo.
 
 /**
  * PanelHojaReporte (V18): hoja oficial discreta.
- * Los ajustes (horas dobles o descuentos) NO se listan: se absorben en el
- * total.
+ * Los ajustes (horas dobles o descuentos) NO se listan: se absorben en el total.
  * El detalle completo de ajustes vive únicamente en el anexo Excel.
  * CONEXIONES:
  * - Es mostrada por com.seq.sisas.ui.DialogoVistaPrevia (pantalla e impresión).
- * - Lee recursos embebidos: /imagenes/logo_seq.png, logo_sep.png,
- * firma_directora.png.
+ * - Lee recursos embebidos: /imagenes/logo_seq.png, logo_sep.png, firma_directora.png.
  * - Lee nombre y cargo de com.seq.sisas.utilidad.ConfiguracionSistema.
  */
 public class PanelHojaReporte extends JPanel { // Panel con dibujo personalizado.
@@ -46,9 +44,7 @@ public class PanelHojaReporte extends JPanel { // Panel con dibujo personalizado
         this.asistencias = asistencias; // Guarda todos los movimientos (incluye ajustes).
         this.visibles = new ArrayList<>(); // Lista oficial para la hoja.
         for (Asistencia a : asistencias) { // Recorre todos los movimientos.
-            if (!a.getEstado().equals("AJUSTE")) {
-                visibles.add(a);
-            } // Solo entradas/salidas reales en la hoja oficial.
+            if (!a.getEstado().equals("AJUSTE")) { visibles.add(a); } // Solo entradas/salidas reales en la hoja oficial.
         } // Fin del filtrado discreto.
         this.logoSeq = cargar("/imagenes/logo_seq.png"); // Carga logo SEQ embebido.
         this.logoSep = cargar("/imagenes/Logo_Escudo_de_Armas_QRoo.png"); // Carga logo SEP embebido.
@@ -60,9 +56,7 @@ public class PanelHojaReporte extends JPanel { // Panel con dibujo personalizado
     // Lee una imagen embebida del sistema; devuelve null si no existe.
     private BufferedImage cargar(String ruta) { // Carga recurso de classpath.
         try (InputStream is = getClass().getResourceAsStream(ruta)) { // Abre el recurso.
-            if (is == null) {
-                return null;
-            } // Si no existe, devuelve null sin fallar.
+            if (is == null) { return null; } // Si no existe, devuelve null sin fallar.
             return ImageIO.read(is); // Decodifica la imagen.
         } catch (Exception ex) { // Ante cualquier error de lectura...
             return null; // ...devuelve null y la hoja se imprime sin esa imagen.
@@ -74,16 +68,11 @@ public class PanelHojaReporte extends JPanel { // Panel con dibujo personalizado
     protected void paintComponent(Graphics g) { // Sobrescribe el dibujo del panel.
         super.paintComponent(g); // Dibuja el fondo blanco.
         Graphics2D g2 = (Graphics2D) g; // Lápiz avanzado.
-        g2.setRenderingHint(java.awt.RenderingHints.KEY_TEXT_ANTIALIASING,
-                java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON); // Texto suave.
+        g2.setRenderingHint(java.awt.RenderingHints.KEY_TEXT_ANTIALIASING, java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON); // Texto suave.
 
         // --- Encabezado con logos ---
-        if (logoSep != null) {
-            g2.drawImage(logoSep, 30, 20, 85, 85, this);
-        } // Logo SEP a la izquierda.
-        if (logoSeq != null) {
-            g2.drawImage(logoSeq, ANCHO - 130, 20, 85, 85, this);
-        } // Logo SEQ a la derecha.
+        if (logoSep != null) { g2.drawImage(logoSep, 30, 20, 85, 85, this); } // Logo SEP a la izquierda.
+        if (logoSeq != null) { g2.drawImage(logoSeq, ANCHO - 130, 20, 85, 85, this); } // Logo SEQ a la derecha.
 
         g2.setColor(Color.BLACK); // Tinta negra.
         g2.setFont(new Font("Arial", Font.BOLD, 13)); // Fuente del encabezado.
@@ -96,35 +85,22 @@ public class PanelHojaReporte extends JPanel { // Panel con dibujo personalizado
         // --- Datos del alumno ---
         g2.setFont(new Font("Arial", Font.PLAIN, 11)); // Fuente de datos.
         int y = 135; // Cursor vertical inicial de datos.
-        g2.drawString("Nombre: " + estudiante.getNombreCompleto(), 40, y);
-        y += 20; // Nombre.
+        g2.drawString("Nombre: " + estudiante.getNombreCompleto(), 40, y); y += 20; // Nombre.
         g2.drawString("CURP: " + estudiante.getCurp(), 40, y); // CURP a la izquierda.
-        g2.drawString("Folio: " + estudiante.getId(), 420, y);
-        y += 20; // Folio a la derecha.
-        g2.drawString("Escuela: " + estudiante.getEscuela(), 40, y);
-        y += 20; // Escuela.
-        g2.drawString("Nivel: " + (estudiante.getNivel() == null ? "" : estudiante.getNivel()), 40, y); // Nivel a la
-                                                                                                        // izquierda.
-        g2.drawString("Tipo: " + (estudiante.getTipoServicio() == null ? "" : estudiante.getTipoServicio()), 420, y);
-        y += 20; // Tipo a la derecha.
-        g2.drawString("Matrícula: " + (estudiante.getMatricula() == null ? "" : estudiante.getMatricula()), 40, y); // Matrícula
-                                                                                                                    // a
-                                                                                                                    // la
-                                                                                                                    // izquierda.
-        g2.drawString("Especialidad: " + (estudiante.getEspecialidad() == null ? "" : estudiante.getEspecialidad()),
-                420, y);
-        y += 20; // Especialidad a la derecha.
+        g2.drawString("Folio: " + estudiante.getId(), 420, y); y += 20; // Folio a la derecha.
+        g2.drawString("Escuela: " + estudiante.getEscuela(), 40, y); y += 20; // Escuela.
+        g2.drawString("Nivel: " + (estudiante.getNivel() == null ? "" : estudiante.getNivel()), 40, y); // Nivel a la izquierda.
+        g2.drawString("Tipo: " + (estudiante.getTipoServicio() == null ? "" : estudiante.getTipoServicio()), 420, y); y += 20; // Tipo a la derecha.
+        g2.drawString("Matrícula: " + (estudiante.getMatricula() == null ? "" : estudiante.getMatricula()), 40, y); // Matrícula a la izquierda.
+        g2.drawString("Especialidad: " + (estudiante.getEspecialidad() == null ? "" : estudiante.getEspecialidad()), 420, y); y += 20; // Especialidad a la derecha.
         g2.drawString("Fecha de ingreso: " + estudiante.getFechaIngreso(), 40, y); // Fecha ingreso.
-        g2.drawString("Fecha fin: " + (estudiante.getFechaFin() == null ? "" : estudiante.getFechaFin()), 420, y);
-        y += 20; // Fecha fin a la derecha.
-        g2.drawString("Estado: " + estudiante.getEstado(), 40, y);
-        y += 20; // Estado.
+        g2.drawString("Fecha fin: " + (estudiante.getFechaFin() == null ? "" : estudiante.getFechaFin()), 420, y); y += 20; // Fecha fin a la derecha.
+        g2.drawString("Estado: " + estudiante.getEstado(), 40, y); y += 20; // Estado.
         g2.drawString("Horas requeridas: " + estudiante.getHorasRequeridas() + "h", 40, y); // Horas meta.
-        g2.drawString("Horas acumuladas: " + FormatoHoras.horasMinutos(estudiante.getHorasAcumuladas()), 420, y);
-        y += 25; // Acumulado humano (incluye ajustes, sin mostrarlos).
+        g2.drawString("Horas acumuladas: " + FormatoHoras.horasMinutos(estudiante.getHorasAcumuladas()), 420, y); y += 25; // Acumulado humano (incluye ajustes, sin mostrarlos).
 
         // --- Tabla de movimientos oficiales (sin ajustes) ---
-        int[] xs = { 40, 115, 235, 355, 420 }; // Posiciones X de las columnas.
+        int[] xs = {40, 115, 235, 355, 420}; // Posiciones X de las columnas.
         g2.setFont(new Font("Arial", Font.BOLD, 10)); // Fuente de encabezados de tabla.
         g2.drawString("Fecha", xs[0], y); // Encabezado Fecha.
         g2.drawString("Entrada", xs[1], y); // Encabezado Entrada.
@@ -132,8 +108,7 @@ public class PanelHojaReporte extends JPanel { // Panel con dibujo personalizado
         g2.drawString("Min", xs[3], y); // Encabezado Minutos.
         g2.drawString("Estado", xs[4], y); // Encabezado Estado.
         y += 5; // Pequeño respiro.
-        g2.drawLine(40, y, ANCHO - 40, y);
-        y += 15; // Línea bajo encabezados.
+        g2.drawLine(40, y, ANCHO - 40, y); y += 15; // Línea bajo encabezados.
 
         g2.setFont(new Font("Arial", Font.PLAIN, 9)); // Fuente compacta de filas.
         int filas = Math.min(visibles.size(), MAX_FILAS); // Limita filas visibles al espacio de la hoja.
@@ -141,40 +116,24 @@ public class PanelHojaReporte extends JPanel { // Panel con dibujo personalizado
             Asistencia a = visibles.get(i); // Movimiento oficial actual.
             g2.drawString(a.getFecha(), xs[0], y); // Día.
             g2.drawString(horaCorta(a.getHoraEntrada()), xs[1], y); // Solo la hora de entrada.
-            g2.drawString(a.getHoraSalida() == null ? "EN CURSO" : horaCorta(a.getHoraSalida()), xs[2], y); // Hora de
-                                                                                                            // salida o
-                                                                                                            // aviso.
+            g2.drawString(a.getHoraSalida() == null ? "EN CURSO" : horaCorta(a.getHoraSalida()), xs[2], y); // Hora de salida o aviso.
             g2.drawString(String.valueOf(a.getMinutos()), xs[3], y); // Minutos de la sesión.
             g2.drawString(a.getEstado(), xs[4], y); // Estado del movimiento.
             y += 16; // Avanza a la siguiente fila.
         } // Fin del recorrido de filas oficiales.
-        if (visibles.size() > MAX_FILAS) {
-            g2.drawString("* Movimientos restantes en el anexo Excel.", 40, y);
-            y += 16;
-        } // Nota si hay más movimientos oficiales.
+        if (visibles.size() > MAX_FILAS) { g2.drawString("* Movimientos restantes en el anexo Excel.", 40, y); y += 16; } // Nota si hay más movimientos oficiales.
 
-        // --- Total del periodo: se calcula con TODOS los movimientos (ajustes
-        // absorbidos) ---
+        // --- Total del periodo: se calcula con TODOS los movimientos (ajustes absorbidos) ---
         int totalMin = 0; // Acumulador de minutos reales.
-        for (Asistencia a : asistencias) {
-            totalMin += a.getMinutos();
-        } // Suma incluyendo ajustes: dobles y descuentos quedan discretos.
+        for (Asistencia a : asistencias) { totalMin += a.getMinutos(); } // Suma incluyendo ajustes: dobles y descuentos quedan discretos.
         g2.setFont(new Font("Arial", Font.BOLD, 11)); // Fuente de total.
-        g2.drawString("TOTAL DEL PERIODO: " + totalMin + " min (" + FormatoHoras.horasMinutos(totalMin / 60.0) + ")",
-                40, y + 10); // Total humano oficial.
+        g2.drawString("TOTAL DEL PERIODO: " + totalMin + " min (" + FormatoHoras.horasMinutos(totalMin / 60.0) + ")", 40, y + 10); // Total humano oficial.
         g2.setFont(new Font("Arial", Font.PLAIN, 8)); // Fuente pequeña de nota al pie.
-        g2.drawString("* El detalle de movimientos y ajustes se encuentra en el anexo Excel.", 40, y + 26); // Remite al
-                                                                                                            // cotejo
-                                                                                                            // interno
-                                                                                                            // sin
-                                                                                                            // exhibir
-                                                                                                            // ajustes.
+        g2.drawString("* El detalle de movimientos y ajustes se encuentra en el anexo Excel.", 40, y + 26); // Remite al cotejo interno sin exhibir ajustes.
 
         // --- Bloque de firma de la directora ---
         int centroX = ANCHO / 2; // Centro horizontal de la hoja.
-        if (firma != null) {
-            g2.drawImage(firma, centroX - 110, ALTO - 165, 220, 80, this);
-        } // Firma escaneada sobre la línea.
+        if (firma != null) { g2.drawImage(firma, centroX - 110, ALTO - 165, 220, 80, this); } // Firma escaneada sobre la línea.
         g2.drawLine(centroX - 120, ALTO - 78, centroX + 120, ALTO - 78); // Línea de firma.
         g2.setFont(new Font("Arial", Font.BOLD, 11)); // Fuente del nombre.
         textoCentrado(g2, ConfiguracionSistema.obtenerNombreDirectora(), ALTO - 62); // Nombre leído de configuración.
@@ -184,9 +143,7 @@ public class PanelHojaReporte extends JPanel { // Panel con dibujo personalizado
 
     // Devuelve solo la parte de hora (HH:mm:ss) de un timestamp completo.
     private String horaCorta(String timestamp) { // Recibe timestamp completo.
-        if (timestamp != null && timestamp.length() > 10) {
-            return timestamp.substring(11);
-        } // Corta la fecha y deja la hora.
+        if (timestamp != null && timestamp.length() > 10) { return timestamp.substring(11); } // Corta la fecha y deja la hora.
         return timestamp; // Si es corto, lo devuelve igual.
     } // Fin de horaCorta.
 

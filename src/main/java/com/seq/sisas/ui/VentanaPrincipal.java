@@ -44,7 +44,7 @@ public class VentanaPrincipal extends JFrame { // Hereda de JFrame.
         menuAsistencia.add(itemAsistencia); // Agrega la opción al menú.
 
         JMenu menuReportes = new JMenu("Reportes"); // Menú de reportes.
-        JMenuItem itemReportes = new JMenuItem("Reportes y Excel"); // Opción que abre reportes.
+        JMenuItem itemReportes = new JMenuItem("Reportes"); // Opción que abre reportes.
         menuReportes.add(itemReportes); // Agrega la opción al menú.
 
         JMenuItem itemConfig = new JMenuItem("Configuración de Firma y Cargo"); // Opción para editar directora sin
