@@ -53,7 +53,7 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
     // ============================================
 
     private JTextField txtNombre; // Campo nombre (obligatorio).
-    private JTextField txtEscuela; // Campo escuela (obligatorio).
+    private JTextField textCurp; // Campo CURP (obligatorio).
     private JComboBox<String> cmbNivel; // Lista nivel PREPA/UNIVERSIDAD.
     private JComboBox<Institucion> cmbEscuela; // Lista escuela filtrada por nivel.
     private JComboBox<String> cmbTipo; // Lista tipo solo para UNIVERSIDAD.
@@ -108,6 +108,7 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
         txtEspecialidad.setPreferredSize(new Dimension(ANCHO_CAMPO, ALTO_CAMPO)); // Vuelve 200x26.
         txtFechaFin = new JTextField(); // Campo fecha fin.
         txtFechaFin.setPreferredSize(new Dimension(ANCHO_CAMPO, ALTO_CAMPO)); // Vuelve 200x26.
+        textCurp = new JTextField(); // Campo CURP.
         txtCurp.setPreferredSize(new Dimension(ANCHO_CAMPO, ALTO_CAMPO)); // Vuelve a 200x26.
         txtFechaNacimiento = new JTextField(); // Campo fecha nac.
         txtFechaNacimiento.setPreferredSize(new Dimension(ANCHO_CAMPO_FECHA, ALTO_CAMPO)); // Vuelve a 110x26.
