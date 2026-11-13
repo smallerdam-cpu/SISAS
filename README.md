@@ -19,8 +19,8 @@ estudiantes de servicio social, con auditoría y seguridad de nivel instituciona
 - **Ajustes de horas**: agrega o quita horas (pagos dobles/triples o descuentos) con
   motivo y contraseña; queda firmado en auditoría y reflejado en reportes.
 - **Reportes oficiales**: vista previa e impresión de hoja con logos SEQ/SEP y firma
-  de la dirección (discreta: los ajustes solo se detallan en el anexo Excel), y
-  exportación del expediente a **Excel con logos y firma incrustados**.
+  de la dirección (discreta: los ajustes se absorben en el total); solo Vista Previa
+  para imprimir y guardar PDF.
 - **Administración**: creación y control de administradores, visor de auditoría de
   solo lectura, respaldo general (anual/semestral) con peso informado y restauración
   con resguardo automático.
@@ -63,6 +63,7 @@ Tecnologías: Java 17 (Swing), SQLite, Apache POI, ZXing, BCrypt y jpackage.
 - 2026-11-10: VentanaPrincipal ("SISAS - Panel Principal") — ahora abre a pantalla completa.
 - 2026-11-12: Base de datos — tabla instituciones (nombre único, nivel PREPA/UNIVERSIDAD) y migración V8 en estudiantes: institucion_id, nivel, tipo_servicio
 matricula, especialidad, fecha_fin. Sin cambios en UI todavía.
+- 2026-11-13: Registro prepa/universidad — Gestión de Prepas y Universidades en el menú Gestión (crear por nombre y nivel); DialogoEstudiante con Nivel PREPA/UNIVERSIDAD, Escuela como lista filtrada por nivel, Tipo SERVICIO_SOCIAL/PRACTICAS_PROFESIONALES solo para UNIVERSIDAD, y campos matrícula, especialidad y fecha fin; la hoja de reporte muestra nivel, tipo, matrícula, especialidad y fecha fin; se quitó Exportar Excel, el reporte queda solo en Vista Previa para imprimir y guardar PDF.
 
 ## Creador
 
