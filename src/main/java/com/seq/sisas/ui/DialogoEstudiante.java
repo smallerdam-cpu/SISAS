@@ -2,6 +2,11 @@ package com.seq.sisas.ui; // Paquete de interfaz de usuario.
 
 import com.seq.sisas.modelo.Estudiante; // Entidad alumno.
 import com.seq.sisas.servicio.ServicioEstudiante; // Lógica de negocio.
+import com.seq.sisas.modelo.Institucion; // Entidad plantel.
+import com.seq.sisas.servicio.ServicioInstitucion; // Lógica de planteles.
+import java.sql.SQLException; // Errores de BD.
+import java.util.List; // Lista en memoria.
+import javax.swing.JComboBox; // Lista desplegable.
 import java.awt.BorderLayout; // Diseño principal del diálogo.
 import java.awt.Dimension; // Medidas fijas en píxeles.
 import java.awt.FlowLayout; // Diseño en fila que no estira components.
@@ -28,10 +33,12 @@ import java.awt.Image; // Imagen para mostrar la photo.
 import javax.swing.ImageIcon; // Icono para mostrar la photo.
 
 /**
- * DialogoEstudiante (V11): formulario con medidas fijas independientes de la ventana.
+ * DialogoEstudiante (V11): formulario con medidas fijas independientes de la
+ * ventana.
  * CONEXIONES:
  * - Es abierto por com.seq.sisas.ui.VentanaGestionEstudiantes.
- * - Usa com.seq.sisas.servicio.ServicioEstudiante pasando la photo seleccionada.
+ * - Usa com.seq.sisas.servicio.ServicioEstudiante pasando la photo
+ * seleccionada.
  */
 public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
 
@@ -47,6 +54,15 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
 
     private JTextField txtNombre; // Campo nombre (obligatorio).
     private JTextField txtEscuela; // Campo escuela (obligatorio).
+    private JComboBox<String> cmbNivel; // Lista nivel PREPA/UNIVERSIDAD.
+    private JComboBox<Institucion> cmbEscuela; // Lista escuela filtrada por nivel.
+    private JComboBox<String> cmbTipo; // Lista tipo solo para UNIVERSIDAD.
+    private JLabel lblTipo; // Etiqueta tipo, se oculta si es PREPA.
+    private JTextField txtMatricula; // Campo matrícula (opcional).
+    private JTextField txtEspecialidad; // Campo especialidad (opcional).
+    private JTextField txtFechaFin; // Campo fecha fin aaaa-mm-dd (opcional).
+    private ServicioInstitucion servicioInstitucion; // Lógica de planteles.
+    private List<Institucion> listaEscuelas; // Lista en memoria sincronizada con cmbEscuela.
     private JTextField txtCurp; // Campo CURP (obligatorio).
     private JTextField txtFechaNacimiento; // Campo fecha nacimiento (obligatorio).
     private JTextField txtDireccion; // Campo dirección (opcional).
@@ -62,22 +78,36 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
     private Estudiante estudianteExistente; // Null si es nuevo; lleno si es edición.
 
     // Constructor: owner = ventana padre; existente = null para crear nuevo.
-    public DialogoEstudiante(JFrame owner, ServicioEstudiante servicio, Integer adminId, Estudiante existente) { // Recibe dependencias.
+    public DialogoEstudiante(JFrame owner, ServicioEstudiante servicio, Integer adminId, Estudiante existente) { // Recibe
+                                                                                                                 // dependencias.
         super(owner, true); // true = modal.
         this.servicio = servicio; // Guarda el servicio.
         this.adminId = adminId; // Guarda el ID del responsable.
         this.estudianteExistente = existente; // Guarda estudiante a editar (o null).
+        this.servicioInstitucion = new ServicioInstitucion(); // Inicializa servicio de planteles.
 
         setTitle(existente == null ? "Registrar Estudiante" : "Editar Estudiante"); // Título según modo.
-        setSize(680, 620); // Tamaño inicial del diálogo.
+        setSize(680, 800); // Tamaño inicial del diálogo.
         setLocationRelativeTo(owner); // Centra sobre el padre.
 
         // --- Casillas con medida fija ---
         txtNombre = new JTextField(); // Campo nombre.
         txtNombre.setPreferredSize(new Dimension(ANCHO_CAMPO, ALTO_CAMPO)); // Vuelve 200x26.
-        txtEscuela = new JTextField(); // Campo escuela.
-        txtEscuela.setPreferredSize(new Dimension(ANCHO_CAMPO, ALTO_CAMPO)); // Vuelve a 200x26.
-        txtCurp = new JTextField(); // Campo CURP.
+        cmbNivel = new JComboBox<>(new String[] { "PREPA", "UNIVERSIDAD" }); // Lista nivel.
+        cmbNivel.setPreferredSize(new Dimension(ANCHO_CAMPO, ALTO_CAMPO)); // Vuelve 200x26.
+        cmbEscuela = new JComboBox<>(); // Lista escuela, se llena por nivel.
+        cmbEscuela.setPreferredSize(new Dimension(ANCHO_CAMPO, ALTO_CAMPO)); // Vuelve 200x26.
+        cmbTipo = new JComboBox<>(new String[] { "SERVICIO_SOCIAL", "PRACTICAS_PROFESIONALES" }); // Lista tipo.
+        cmbTipo.setPreferredSize(new Dimension(ANCHO_CAMPO, ALTO_CAMPO)); // Vuelve 200x26.
+        lblTipo = new JLabel("Tipo (*):"); // Etiqueta tipo.
+        lblTipo.setVisible(false); // Oculta al inicio, solo UNIVERSIDAD.
+        cmbTipo.setVisible(false); // Oculta al inicio, solo UNIVERSIDAD.
+        txtMatricula = new JTextField(); // Campo matrícula.
+        txtMatricula.setPreferredSize(new Dimension(ANCHO_CAMPO, ALTO_CAMPO)); // Vuelve 200x26.
+        txtEspecialidad = new JTextField(); // Campo especialidad.
+        txtEspecialidad.setPreferredSize(new Dimension(ANCHO_CAMPO, ALTO_CAMPO)); // Vuelve 200x26.
+        txtFechaFin = new JTextField(); // Campo fecha fin.
+        txtFechaFin.setPreferredSize(new Dimension(ANCHO_CAMPO, ALTO_CAMPO)); // Vuelve 200x26.
         txtCurp.setPreferredSize(new Dimension(ANCHO_CAMPO, ALTO_CAMPO)); // Vuelve a 200x26.
         txtFechaNacimiento = new JTextField(); // Campo fecha nac.
         txtFechaNacimiento.setPreferredSize(new Dimension(ANCHO_CAMPO_FECHA, ALTO_CAMPO)); // Vuelve a 110x26.
@@ -98,25 +128,64 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
         lblFotoPreview.setPreferredSize(new Dimension(120, 120)); // Tamaño fijo de la vista previa.
         lblFotoPreview.setBorder(javax.swing.BorderFactory.createEtchedBorder()); // Borde para la vista previa.
 
+        cmbNivel.addActionListener(new ActionListener() { // Escucha cambio de nivel.
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cargarEscuelas();
+                actualizarTipo();
+            } // Recarga escuelas y muestra/oculta tipo.
+        }); // Fin del listener.
+        cargarEscuelas(); // Carga inicial de escuelas PREPA.
+        actualizarTipo(); // Oculta tipo al inicio.
+
         // Si es edición, pre-llena los campos y muestra la foto actual.
         if (existente != null) { // Modo edición.
             txtNombre.setText(existente.getNombreCompleto()); // Carga nombre.
-            txtEscuela.setText(existente.getEscuela()); // Carga escuela.
+            if (existente.getNivel() != null && !existente.getNivel().isEmpty()) {
+                cmbNivel.setSelectedItem(existente.getNivel());
+            } // Carga nivel.
+            cargarEscuelas(); // Recarga escuelas del nivel cargado.
+            for (Institucion inst : listaEscuelas) {
+                if (inst.getId() == existente.getInstitucionId()) {
+                    cmbEscuela.setSelectedItem(inst);
+                }
+            } // Selecciona su escuela.
+            if (existente.getTipoServicio() != null) {
+                cmbTipo.setSelectedItem(existente.getTipoServicio());
+            } // Carga tipo.
+            txtMatricula.setText(existente.getMatricula() == null ? "" : existente.getMatricula()); // Carga matrícula.
+            txtEspecialidad.setText(existente.getEspecialidad() == null ? "" : existente.getEspecialidad()); // Carga
+                                                                                                             // especialidad.
+            txtFechaFin.setText(existente.getFechaFin() == null ? "" : existente.getFechaFin()); // Carga fecha fin.
+            actualizarTipo(); // Muestra tipo si es UNIVERSIDAD.
             txtCurp.setText(existente.getCurp()); // Carga CURP.
             txtFechaNacimiento.setText(existente.getFechaNacimiento()); // Carga fecha nac.
             txtDireccion.setText(existente.getDireccion()); // Carga dirección.
             txtContacto.setText(existente.getContacto()); // Carga contacto.
             txtFecha.setText(existente.getFechaIngreso()); // Carga fecha ingreso.
             txtHoras.setText(String.valueOf(existente.getHorasRequeridas())); // Carga horas.
-            if (existente.getFoto() != null) { lblFotoEstado.setText("Foto actual: " + existente.getFoto()); } // Muestra foto actual.
+            if (existente.getFoto() != null) {
+                lblFotoEstado.setText("Foto actual: " + existente.getFoto());
+            } // Muestra foto actual.
             calcularEdad(); // Pinta la edad inmediatamente.
         } // Fin de pre-llenado.
 
         // Recalcula la edad en vivo con cada tecla en fecha de nacimiento.
         txtFechaNacimiento.getDocument().addDocumentListener(new DocumentListener() { // Listener de escritura.
-            @Override public void insertUpdate(DocumentEvent e) { calcularEdad(); } // Al escribir.
-            @Override public void removeUpdate(DocumentEvent e) { calcularEdad(); } // Al borrar.
-            @Override public void changedUpdate(DocumentEvent e) { calcularEdad(); } // Al cambiar.
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                calcularEdad();
+            } // Al escribir.
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                calcularEdad();
+            } // Al borrar.
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                calcularEdad();
+            } // Al cambiar.
         }); // Fin del DocumentListener.
 
         // Abre el selector de archivos y guarda la imagen elegida.
@@ -124,7 +193,8 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
             @Override
             public void actionPerformed(ActionEvent e) { // Al hacer clic...
                 JFileChooser selector = new JFileChooser(); // Crea el selector del sistema.
-                selector.setFileFilter(new FileNameExtensionFilter("Imagenes (jpg, png)", "jpg", "jpeg", "png")); // Solo imágenes.
+                selector.setFileFilter(new FileNameExtensionFilter("Imagenes (jpg, png)", "jpg", "jpeg", "png")); // Solo
+                                                                                                                  // imágenes.
                 int resultado = selector.showOpenDialog(DialogoEstudiante.this); // Abre diálogo de selección.
                 if (resultado == JFileChooser.APPROVE_OPTION) { // Si eligió archivo...
                     fotoSeleccionada = selector.getSelectedFile(); // Guarda el archivo en memoria.
@@ -148,55 +218,111 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
         GridBagConstraints gbc = new GridBagConstraints(); // Reglas de colocación.
         gbc.insets = new Insets(ESPACIO, ESPACIO, ESPACIO, ESPACIO); // Margen uniforme.
 
-        gbc.gridx = 0; gbc.gridy = 0; gbc.anchor = GridBagConstraints.EAST; // Etiqueta a la derecha.
-        panelCampos.add(new JLabel("Nombre completo (*):"), gbc); // Etiqueta nombre.
-        gbc.gridx = 1; gbc.anchor = GridBagConstraints.WEST; // Campo a la izquierda.
-        panelCampos.add(txtNombre, gbc); // Campo nombre.
-
-        gbc.gridx = 0; gbc.gridy = 1; gbc.anchor = GridBagConstraints.EAST; // Etiqueta a la derecha.
-        panelCampos.add(new JLabel("Escuela (*):"), gbc); // Etiqueta escuela.
-        gbc.gridx = 1; gbc.anchor = GridBagConstraints.WEST; // Campo a la izquierda.
-        panelCampos.add(txtEscuela, gbc); // Campo escuela.
-
-        gbc.gridx = 0; gbc.gridy = 2; gbc.anchor = GridBagConstraints.EAST; // Etiqueta a la derecha.
-        panelCampos.add(new JLabel("CURP (*):"), gbc); // Etiqueta CURP.
-        gbc.gridx = 1; gbc.anchor = GridBagConstraints.WEST; // Campo a la izquierda.
-        panelCampos.add(txtCurp, gbc); // Campo CURP.
-
-        gbc.gridx = 0; gbc.gridy = 3; gbc.anchor = GridBagConstraints.EAST; // Etiqueta a la derecha.
-        panelCampos.add(new JLabel("Fecha nacimiento (*):"), gbc); // Etiqueta fecha nac.
-        gbc.gridx = 1; gbc.anchor = GridBagConstraints.WEST; // Panel a la izquierda.
-        panelCampos.add(panelFechaNac, gbc); // Fila fecha + edad.
-
-        gbc.gridx = 0; gbc.gridy = 4; gbc.anchor = GridBagConstraints.EAST; // Etiqueta a la derecha.
-        panelCampos.add(new JLabel("Direccion (opcional):"), gbc); // Etiqueta dirección.
-        gbc.gridx = 1; gbc.anchor = GridBagConstraints.WEST; // Campo a la izquierda.
-        panelCampos.add(txtDireccion, gbc); // Campo dirección.
-
-        gbc.gridx = 0; gbc.gridy = 5; gbc.anchor = GridBagConstraints.EAST; // Etiqueta a la derecha.
-        panelCampos.add(new JLabel("Contacto:"), gbc); // Etiqueta contacto.
-        gbc.gridx = 1; gbc.anchor = GridBagConstraints.WEST; // Campo a la izquierda.
-        panelCampos.add(txtContacto, gbc); // Campo contacto.
-
-        gbc.gridx = 0; gbc.gridy = 6; gbc.anchor = GridBagConstraints.EAST; // Etiqueta a la derecha.
-        panelCampos.add(new JLabel("Fecha ingreso (*) aaaa-mm-dd:"), gbc); // Etiqueta fecha ingreso.
-        gbc.gridx = 1; gbc.anchor = GridBagConstraints.WEST; // Campo a la izquierda.
-        panelCampos.add(txtFecha, gbc); // Campo fecha ingreso.
-
-        gbc.gridx = 0; gbc.gridy = 7; gbc.anchor = GridBagConstraints.EAST; // Etiqueta a la derecha.
-        panelCampos.add(new JLabel("Horas requeridas (*):"), gbc); // Etiqueta horas.
-        gbc.gridx = 1; gbc.anchor = GridBagConstraints.WEST; // Campo a la izquierda.
-        panelCampos.add(txtHoras, gbc); // Campo horas.
-
-        gbc.gridx = 0; gbc.gridy = 8; gbc.anchor = GridBagConstraints.EAST; // Etiqueta a la derecha.
-        panelCampos.add(new JLabel("Foto de perfil:"), gbc); // Etiqueta foto.
-        gbc.gridx = 1; gbc.anchor = GridBagConstraints.WEST; // Panel a la izquierda.
-        panelCampos.add(panelFoto, gbc); // Fila botón + estado de foto.
-
-        gbc.gridx = 0; gbc.gridy = 9; gbc.anchor = GridBagConstraints.EAST; // Etiqueta a la derecha.
-        panelCampos.add(new JLabel("Vista previa:"), gbc); // Etiqueta vista previa.
-        gbc.gridx = 1; gbc.anchor = GridBagConstraints.WEST; // Etiqueta a la izquierda.
-        panelCampos.add(lblFotoPreview, gbc); // Muestra la foto seleccionada 120x120.
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.EAST;
+        panelCampos.add(new JLabel("Nivel (*):"), gbc);
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        panelCampos.add(cmbNivel, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        panelCampos.add(new JLabel("Nombre completo (*):"), gbc);
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        panelCampos.add(txtNombre, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.anchor = GridBagConstraints.EAST;
+        panelCampos.add(new JLabel("Escuela (*):"), gbc);
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        panelCampos.add(cmbEscuela, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.anchor = GridBagConstraints.EAST;
+        panelCampos.add(lblTipo, gbc);
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        panelCampos.add(cmbTipo, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.anchor = GridBagConstraints.EAST;
+        panelCampos.add(new JLabel("CURP (*):"), gbc);
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        panelCampos.add(txtCurp, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.anchor = GridBagConstraints.EAST;
+        panelCampos.add(new JLabel("Fecha nacimiento (*):"), gbc);
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        panelCampos.add(panelFechaNac, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 6;
+        gbc.anchor = GridBagConstraints.EAST;
+        panelCampos.add(new JLabel("Direccion (opcional):"), gbc);
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        panelCampos.add(txtDireccion, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 7;
+        gbc.anchor = GridBagConstraints.EAST;
+        panelCampos.add(new JLabel("Contacto:"), gbc);
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        panelCampos.add(txtContacto, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 8;
+        gbc.anchor = GridBagConstraints.EAST;
+        panelCampos.add(new JLabel("Fecha ingreso (*) aaaa-mm-dd:"), gbc);
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        panelCampos.add(txtFecha, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 9;
+        gbc.anchor = GridBagConstraints.EAST;
+        panelCampos.add(new JLabel("Fecha fin (aaaa-mm-dd):"), gbc);
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        panelCampos.add(txtFechaFin, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 10;
+        gbc.anchor = GridBagConstraints.EAST;
+        panelCampos.add(new JLabel("Matrícula:"), gbc);
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        panelCampos.add(txtMatricula, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 11;
+        gbc.anchor = GridBagConstraints.EAST;
+        panelCampos.add(new JLabel("Especialidad:"), gbc);
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        panelCampos.add(txtEspecialidad, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 12;
+        gbc.anchor = GridBagConstraints.EAST;
+        panelCampos.add(new JLabel("Horas requeridas (*):"), gbc);
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        panelCampos.add(txtHoras, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 13;
+        gbc.anchor = GridBagConstraints.EAST;
+        panelCampos.add(new JLabel("Foto de perfil:"), gbc);
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        panelCampos.add(panelFoto, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 14;
+        gbc.anchor = GridBagConstraints.EAST;
+        panelCampos.add(new JLabel("Vista previa:"), gbc);
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        panelCampos.add(lblFotoPreview, gbc);
 
         // --- Botones inferiores con medida fija ---
         JButton btnGuardar = new JButton("Guardar"); // Botón guardar.
@@ -212,14 +338,46 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
 
         btnGuardar.addActionListener(new ActionListener() { // Escucha clic en guardar.
             @Override
-            public void actionPerformed(ActionEvent e) { guardar(); } // Ejecuta guardado.
+            public void actionPerformed(ActionEvent e) {
+                guardar();
+            } // Ejecuta guardado.
         }); // Fin del listener.
 
         btnCancelar.addActionListener(new ActionListener() { // Escucha clic en cancelar.
             @Override
-            public void actionPerformed(ActionEvent e) { dispose(); } // Cierra sin guardar.
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            } // Cierra sin guardar.
         }); // Fin del listener.
     } // Fin del constructor.
+
+    // Carga en cmbEscuela solo las instituciones activas del nivel elegido.
+    private void cargarEscuelas() { // Recarga escuelas por nivel.
+        try { // Intenta leer la BD.
+            String nivel = (String) cmbNivel.getSelectedItem(); // Nivel elegido.
+            listaEscuelas = servicioInstitucion.listarPorNivel(nivel); // Obtiene solo ese nivel.
+            cmbEscuela.removeAllItems(); // Limpia la lista actual.
+            for (Institucion inst : listaEscuelas) {
+                cmbEscuela.addItem(inst);
+            } // Agrega cada plantel.
+        } catch (SQLException ex) { // Captura error de BD.
+            JOptionPane.showMessageDialog(this, "Error al cargar escuelas: " + ex.getMessage(), "Error",
+                    JOptionPane.ERROR_MESSAGE); // Muestra error.
+        } // Fin del catch.
+    } // Fin de cargarEscuelas.
+      // Muestra Tipo solo si el nivel es UNIVERSIDAD; si es PREPA lo oculta y fija
+      // SERVICIO_SOCIAL.
+
+    private void actualizarTipo() { // Muestra/oculta tipo.
+        boolean esUni = "UNIVERSIDAD".equals(cmbNivel.getSelectedItem()); // ¿Es universidad?
+        lblTipo.setVisible(esUni); // Muestra etiqueta solo si es universidad.
+        cmbTipo.setVisible(esUni); // Muestra lista solo si es universidad.
+        if (!esUni) {
+            cmbTipo.setSelectedItem("SERVICIO_SOCIAL");
+        } // Prepa siempre es servicio social.
+        revalidate(); // Recalcula el diseño.
+        repaint(); // Repinta el diálogo.
+    } // Fin de actualizarTipo.
 
     // Calcula y muestra la edad en número a partir de la fecha escrita.
     private void calcularEdad() { // Recalcula la edad.
@@ -232,20 +390,21 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
         } // Fin del catch.
     } // Fin de calcularEdad.
 
-    //Escala la Foto a 120x120 y la muestra en lblFotoPreview
+    // Escala la Foto a 120x120 y la muestra en lblFotoPreview
     private void mostrarFoto(File foto) { // Muestra la foto en la vista previa.
         ImageIcon original = new ImageIcon(foto.getAbsolutePath()); // Carga la imagen.
         Image escala = original.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH); // Escala suavemente.
         lblFotoPreview.setIcon(new ImageIcon(escala)); // Muestra la imagen escalada.
         lblFotoPreview.revalidate(); // Refresca el componente.
         lblFotoPreview.repaint(); // Repinta el componente.
-        
+
     } // Fin de mostrarFoto.
 
     // Valida obligatorios y guarda (nuevo o edición) pasando la foto al servicio.
     private void guardar() { // Procesa el guardado.
         String nombre = txtNombre.getText().trim(); // Lee nombre.
-        String escuela = txtEscuela.getText().trim(); // Lee escuela.
+        Institucion instSel = (Institucion) cmbEscuela.getSelectedItem(); // Escuela elegida.
+        String escuela = instSel == null ? "" : instSel.getNombre(); // Nombre de la escuela elegida
         String curp = txtCurp.getText().trim().toUpperCase(); // Lee CURP en mayúsculas.
         String fechaNacTexto = txtFechaNacimiento.getText().trim(); // Lee fecha nac.
         String direccion = txtDireccion.getText().trim(); // Lee dirección.
@@ -254,7 +413,8 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
         String horasTexto = txtHoras.getText().trim(); // Lee horas.
 
         if (nombre.isEmpty() || escuela.isEmpty() || fecha.isEmpty() || horasTexto.isEmpty()) { // Obligatorios básicos.
-            JOptionPane.showMessageDialog(this, "Nombre, escuela, fecha de ingreso y horas son obligatorios.", "Validacion", JOptionPane.WARNING_MESSAGE); // Avisa.
+            JOptionPane.showMessageDialog(this, "Nombre, escuela, fecha de ingreso y horas son obligatorios.",
+                    "Validacion", JOptionPane.WARNING_MESSAGE); // Avisa.
             return; // Corta ejecución.
         } // Fin de validación básica.
 
@@ -264,7 +424,8 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
         } // Fin de validación de CURP.
 
         if (!curp.matches("[A-Z]{4}\\d{6}[HM][A-Z]{5}[A-Z0-9]{2}")) { // Formato oficial CURP.
-            JOptionPane.showMessageDialog(this, "Formato de CURP invalido. Debe tener 18 caracteres.", "Validacion", JOptionPane.WARNING_MESSAGE); // Avisa.
+            JOptionPane.showMessageDialog(this, "Formato de CURP invalido. Debe tener 18 caracteres.", "Validacion",
+                    JOptionPane.WARNING_MESSAGE); // Avisa.
             return; // Corta ejecución.
         } // Fin de validación de formato.
 
@@ -272,7 +433,8 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
         try { // Intenta interpretar.
             fechaNac = LocalDate.parse(fechaNacTexto); // Convierte y valida.
         } catch (Exception ex) { // Si es inválida...
-            JOptionPane.showMessageDialog(this, "Fecha de nacimiento obligatoria e invalida. Use aaaa-mm-dd.", "Validacion", JOptionPane.WARNING_MESSAGE); // Avisa.
+            JOptionPane.showMessageDialog(this, "Fecha de nacimiento obligatoria e invalida. Use aaaa-mm-dd.",
+                    "Validacion", JOptionPane.WARNING_MESSAGE); // Avisa.
             return; // Corta ejecución.
         } // Fin de validación de fecha.
 
@@ -280,7 +442,8 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
         try { // Intenta convertir.
             horas = Integer.parseInt(horasTexto); // Convierte a int.
         } catch (NumberFormatException ex) { // Si no es número...
-            JOptionPane.showMessageDialog(this, "Las horas deben ser un numero valido.", "Validacion", JOptionPane.WARNING_MESSAGE); // Avisa.
+            JOptionPane.showMessageDialog(this, "Las horas deben ser un numero valido.", "Validacion",
+                    JOptionPane.WARNING_MESSAGE); // Avisa.
             return; // Corta ejecución.
         } // Fin de validación numérica.
 
@@ -295,8 +458,10 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
                 nuevo.setContacto(contacto); // Asigna contacto.
                 nuevo.setFechaIngreso(fecha); // Asigna fecha ingreso.
                 nuevo.setHorasRequeridas(horas); // Asigna horas.
-                String codigo = servicio.registrarEstudiante(nuevo, adminId, fotoSeleccionada); // Registra con foto opcional.
-                JOptionPane.showMessageDialog(this, "Estudiante registrado.\nCódigo QR: " + codigo, "Éxito", JOptionPane.INFORMATION_MESSAGE); // Muestra código.
+                String codigo = servicio.registrarEstudiante(nuevo, adminId, fotoSeleccionada); // Registra con foto
+                                                                                                // opcional.
+                JOptionPane.showMessageDialog(this, "Estudiante registrado.\nCódigo QR: " + codigo, "Éxito",
+                        JOptionPane.INFORMATION_MESSAGE); // Muestra código.
             } else { // Modo edición.
                 estudianteExistente.setNombreCompleto(nombre); // Actualiza nombre.
                 estudianteExistente.setEscuela(escuela); // Actualiza escuela.
@@ -306,12 +471,15 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
                 estudianteExistente.setContacto(contacto); // Actualiza contacto.
                 estudianteExistente.setFechaIngreso(fecha); // Actualiza fecha ingreso.
                 estudianteExistente.setHorasRequeridas(horas); // Actualiza horas.
-                servicio.actualizarEstudiante(estudianteExistente, adminId, fotoSeleccionada); // Actualiza con foto opcional.
-                JOptionPane.showMessageDialog(this, "Datos actualizados correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE); // Confirma.
+                servicio.actualizarEstudiante(estudianteExistente, adminId, fotoSeleccionada); // Actualiza con foto
+                                                                                               // opcional.
+                JOptionPane.showMessageDialog(this, "Datos actualizados correctamente.", "Éxito",
+                        JOptionPane.INFORMATION_MESSAGE); // Confirma.
             } // Fin de evaluación de modo.
             dispose(); // Cierra el diálogo.
         } catch (Exception ex) { // Captura error de BD, CURP duplicada o archivo.
-            JOptionPane.showMessageDialog(this, "Error al guardar: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); // Muestra error.
+            JOptionPane.showMessageDialog(this, "Error al guardar: " + ex.getMessage(), "Error",
+                    JOptionPane.ERROR_MESSAGE); // Muestra error.
         } // Fin del catch.
     } // Fin de guardar.
 } // Fin de la clase DialogoEstudiante.
