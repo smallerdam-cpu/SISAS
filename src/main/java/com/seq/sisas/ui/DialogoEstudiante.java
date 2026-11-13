@@ -340,7 +340,7 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
         btnGuardar.addActionListener(new ActionListener() { // Escucha clic en guardar.
             @Override
             public void actionPerformed(ActionEvent e) {
-                guardar();
+               guardar() ;
             } // Ejecuta guardado.
         }); // Fin del listener.
 
@@ -412,6 +412,13 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
         String contacto = txtContacto.getText().trim(); // Lee contacto.
         String fecha = txtFecha.getText().trim(); // Lee fecha ingreso.
         String horasTexto = txtHoras.getText().trim(); // Lee horas.
+        String nivel = (String) cmbNivel.getSelectedItem(); // Lee nivel.
+        String tipo = "PREPA".equals(nivel) ? "SERVICIO_SOCIAL" : (String) cmbTipo.getSelectedItem(); // Prepa siempre servicio social.
+        String matricula = txtMatricula.getText().trim(); // Lee matrícula.
+        String especialidad = txtEspecialidad.getText().trim(); // Lee especialidad.
+        String fechaFin = txtFechaFin.getText().trim(); // Lee fecha fin.
+        int institucionId = instSel == null ? 0 : instSel.getId(); // ID de la escuela elegida.
+
 
         if (nombre.isEmpty() || escuela.isEmpty() || fecha.isEmpty() || horasTexto.isEmpty()) { // Obligatorios básicos.
             JOptionPane.showMessageDialog(this, "Nombre, escuela, fecha de ingreso y horas son obligatorios.",
@@ -439,6 +446,13 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
             return; // Corta ejecución.
         } // Fin de validación de fecha.
 
+        if (!fechaFin.isEmpty()) { // Fecha fin opcional, pero si la escribe debe ser válida.
+            try { LocalDate.parse(fechaFin); } catch (Exception ex) { // Si es inválida...
+                JOptionPane.showMessageDialog(this, "Fecha fin inválida. Use aaaa-mm-dd o déjela vacía.", "Validacion", JOptionPane.WARNING_MESSAGE); // Avisa.
+                return; // Corta ejecución.
+            } // Fin de validación de fecha fin.
+        } // Fin de validación opcional.
+
         int horas; // Variable numérica de horas.
         try { // Intenta convertir.
             horas = Integer.parseInt(horasTexto); // Convierte a int.
@@ -447,6 +461,7 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
                     JOptionPane.WARNING_MESSAGE); // Avisa.
             return; // Corta ejecución.
         } // Fin de validación numérica.
+        
 
         try { // Intenta guardar en base de datos.
             if (estudianteExistente == null) { // Modo creación.
@@ -459,6 +474,12 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
                 nuevo.setContacto(contacto); // Asigna contacto.
                 nuevo.setFechaIngreso(fecha); // Asigna fecha ingreso.
                 nuevo.setHorasRequeridas(horas); // Asigna horas.
+                nuevo.setInstitucionId(institucionId); // Asigna escuela elegida.
+                nuevo.setNivel(nivel); // Asigna nivel.
+                nuevo.setTipoServicio(tipo); // Asigna tipo.
+                nuevo.setMatricula(matricula); // Asigna matrícula.
+                nuevo.setEspecialidad(especialidad); // Asigna especialidad.
+                nuevo.setFechaFin(fechaFin.isEmpty() ? null : fechaFin); // Asigna fecha fin.
                 String codigo = servicio.registrarEstudiante(nuevo, adminId, fotoSeleccionada); // Registra con foto
                                                                                                 // opcional.
                 JOptionPane.showMessageDialog(this, "Estudiante registrado.\nCódigo QR: " + codigo, "Éxito",
@@ -472,6 +493,12 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
                 estudianteExistente.setContacto(contacto); // Actualiza contacto.
                 estudianteExistente.setFechaIngreso(fecha); // Actualiza fecha ingreso.
                 estudianteExistente.setHorasRequeridas(horas); // Actualiza horas.
+                estudianteExistente.setInstitucionId(institucionId); // Actualiza escuela elegida.
+                estudianteExistente.setNivel(nivel); // Actualiza nivel.
+                estudianteExistente.setTipoServicio(tipo); // Actualiza tipo.
+                estudianteExistente.setMatricula(matricula); // Actualiza matrícula.
+                estudianteExistente.setEspecialidad(especialidad); // Actualiza especialidad.
+                estudianteExistente.setFechaFin(fechaFin.isEmpty() ? null : fechaFin); // Actualiza fecha fin.
                 servicio.actualizarEstudiante(estudianteExistente, adminId, fotoSeleccionada); // Actualiza con foto
                                                                                                // opcional.
                 JOptionPane.showMessageDialog(this, "Datos actualizados correctamente.", "Éxito",
