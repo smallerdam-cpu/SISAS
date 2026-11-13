@@ -61,6 +61,8 @@ Tecnologías: Java 17 (Swing), SQLite, Apache POI, ZXing, BCrypt y jpackage.
 
 - 2026-11-10: DialogoEstudiante ("Registrar Estudiante") — vista previa de la foto 120x120 al cargar imagen; campos de texto con tamaño fijo 200x26 (110x26 fecha de nacimiento) que ya no se encogen al cargar la foto; estado de foto corto ("Foto cargada"); diálogo ampliado a 680x620.
 - 2026-11-10: VentanaPrincipal ("SISAS - Panel Principal") — ahora abre a pantalla completa.
+- 2026-11-12: Base de datos — tabla instituciones (nombre único, nivel PREPA/UNIVERSIDAD) y migración V8 en estudiantes: institucion_id, nivel, tipo_servicio
+matricula, especialidad, fecha_fin. Sin cambios en UI todavía.
 
 ## Creador
 
