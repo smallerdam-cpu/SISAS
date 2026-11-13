@@ -53,7 +53,6 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
     // ============================================
 
     private JTextField txtNombre; // Campo nombre (obligatorio).
-    private JTextField textCurp; // Campo CURP (obligatorio).
     private JComboBox<String> cmbNivel; // Lista nivel PREPA/UNIVERSIDAD.
     private JComboBox<Institucion> cmbEscuela; // Lista escuela filtrada por nivel.
     private JComboBox<String> cmbTipo; // Lista tipo solo para UNIVERSIDAD.
@@ -108,7 +107,7 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
         txtEspecialidad.setPreferredSize(new Dimension(ANCHO_CAMPO, ALTO_CAMPO)); // Vuelve 200x26.
         txtFechaFin = new JTextField(); // Campo fecha fin.
         txtFechaFin.setPreferredSize(new Dimension(ANCHO_CAMPO, ALTO_CAMPO)); // Vuelve 200x26.
-        textCurp = new JTextField(); // Campo CURP.
+        txtCurp = new JTextField(); // Campo CURP.
         txtCurp.setPreferredSize(new Dimension(ANCHO_CAMPO, ALTO_CAMPO)); // Vuelve a 200x26.
         txtFechaNacimiento = new JTextField(); // Campo fecha nac.
         txtFechaNacimiento.setPreferredSize(new Dimension(ANCHO_CAMPO_FECHA, ALTO_CAMPO)); // Vuelve a 110x26.
@@ -340,7 +339,7 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
         btnGuardar.addActionListener(new ActionListener() { // Escucha clic en guardar.
             @Override
             public void actionPerformed(ActionEvent e) {
-               guardar() ;
+                guardar();
             } // Ejecuta guardado.
         }); // Fin del listener.
 
@@ -413,12 +412,13 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
         String fecha = txtFecha.getText().trim(); // Lee fecha ingreso.
         String horasTexto = txtHoras.getText().trim(); // Lee horas.
         String nivel = (String) cmbNivel.getSelectedItem(); // Lee nivel.
-        String tipo = "PREPA".equals(nivel) ? "SERVICIO_SOCIAL" : (String) cmbTipo.getSelectedItem(); // Prepa siempre servicio social.
+        String tipo = "PREPA".equals(nivel) ? "SERVICIO_SOCIAL" : (String) cmbTipo.getSelectedItem(); // Prepa siempre
+                                                                                                      // servicio
+                                                                                                      // social.
         String matricula = txtMatricula.getText().trim(); // Lee matrícula.
         String especialidad = txtEspecialidad.getText().trim(); // Lee especialidad.
         String fechaFin = txtFechaFin.getText().trim(); // Lee fecha fin.
         int institucionId = instSel == null ? 0 : instSel.getId(); // ID de la escuela elegida.
-
 
         if (nombre.isEmpty() || escuela.isEmpty() || fecha.isEmpty() || horasTexto.isEmpty()) { // Obligatorios básicos.
             JOptionPane.showMessageDialog(this, "Nombre, escuela, fecha de ingreso y horas son obligatorios.",
@@ -447,8 +447,11 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
         } // Fin de validación de fecha.
 
         if (!fechaFin.isEmpty()) { // Fecha fin opcional, pero si la escribe debe ser válida.
-            try { LocalDate.parse(fechaFin); } catch (Exception ex) { // Si es inválida...
-                JOptionPane.showMessageDialog(this, "Fecha fin inválida. Use aaaa-mm-dd o déjela vacía.", "Validacion", JOptionPane.WARNING_MESSAGE); // Avisa.
+            try {
+                LocalDate.parse(fechaFin);
+            } catch (Exception ex) { // Si es inválida...
+                JOptionPane.showMessageDialog(this, "Fecha fin inválida. Use aaaa-mm-dd o déjela vacía.", "Validacion",
+                        JOptionPane.WARNING_MESSAGE); // Avisa.
                 return; // Corta ejecución.
             } // Fin de validación de fecha fin.
         } // Fin de validación opcional.
@@ -461,7 +464,6 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
                     JOptionPane.WARNING_MESSAGE); // Avisa.
             return; // Corta ejecución.
         } // Fin de validación numérica.
-        
 
         try { // Intenta guardar en base de datos.
             if (estudianteExistente == null) { // Modo creación.
