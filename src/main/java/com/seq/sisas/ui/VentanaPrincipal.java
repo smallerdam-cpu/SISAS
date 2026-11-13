@@ -11,25 +11,26 @@ import javax.swing.JMenuBar; // Barra de menú superior.
 import javax.swing.JMenuItem; // Opción dentro de un menú.
 
 /**
- * VentanaPrincipal (V12): barra de menú ordenada estilo SIOSAD, sin botones flotantes.
+ * VentanaPrincipal (V12): barra de menú ordenada estilo SIOSAD, sin botones
+ * flotantes.
  * CONEXIONES:
  * - Recibe Administrador de com.seq.sisas.ui.VentanaLogin.
  * - Desde la barra abre: VentanaGestionEstudiantes, kiosco VentanaAsistencia,
- *   VentanaReporters, DialogoAyuda y DialogoAcercaDe.
+ * VentanaReporters, DialogoAyuda y DialogoAcercaDe.
  */
 public class VentanaPrincipal extends JFrame { // Hereda de JFrame.
 
-    //private Administrador adminLogueado; // Admin actual en memoria.
+    // private Administrador adminLogueado; // Admin actual en memoria.
 
     // Constructor que recibe al administrador logueado.
     public VentanaPrincipal(Administrador adminLogueado) { // Recibe al admin.
-        //this.adminLogueado = adminLogueado; // Guarda al admin.
+        // this.adminLogueado = adminLogueado; // Guarda al admin.
 
         setTitle("SISAS - Panel Principal"); // Título.
-        //setSize(800, 450); // Tamaño initial ordenado y ligero.
+        // setSize(800, 450); // Tamaño initial ordenado y ligero.
         setExtendedState(JFrame.MAXIMIZED_BOTH); // Pantalla completa.
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Cierra todo al salir.
-        //setLocationRelativeTo(null); // Centra en pantalla.
+        // setLocationRelativeTo(null); // Centra en pantalla.
 
         // --- Barra de menú superior: todas las opciones al lado de Ayuda ---
         JMenuBar barraMenu = new JMenuBar(); // Barra estilo SIOSAD.
@@ -46,7 +47,8 @@ public class VentanaPrincipal extends JFrame { // Hereda de JFrame.
         JMenuItem itemReportes = new JMenuItem("Reportes y Excel"); // Opción que abre reportes.
         menuReportes.add(itemReportes); // Agrega la opción al menú.
 
-        JMenuItem itemConfig = new JMenuItem("Configuración de Firma y Cargo"); // Opción para editar directora sin reinstalar.
+        JMenuItem itemConfig = new JMenuItem("Configuración de Firma y Cargo"); // Opción para editar directora sin
+                                                                                // reinstalar.
         menuReportes.add(itemConfig); // Agrega la opción al menú Reportes.
 
         JMenu menuAyuda = new JMenu("Ayuda"); // Menú de ayuda.
@@ -67,10 +69,13 @@ public class VentanaPrincipal extends JFrame { // Hereda de JFrame.
 
         JMenuItem itemRespaldo = new JMenuItem("Respaldo de Información"); // Opción que abre el módulo de respaldos.
         menuAdmin.add(itemRespaldo); // Agrega la opción al menú Administración.
-        
+
+        JMenuItem itemInstituciones = new JMenuItem("Gestion de prepas y Universidades"); // Opcion que abre el modulo
+        menuGestion.add(itemInstituciones); // Agrega la opción al menú.
+
         menuAdmin.add(itemAdmins); // Agrega la opción al menú.
         barraMenu.add(menuAdmin); // Coloca Administración antes de Ayuda.
-        
+
         barraMenu.add(menuGestion); // Coloca Gestión primero.
         barraMenu.add(menuAsistencia); // Coloca Asistencia al lado.
         barraMenu.add(menuReportes); // Coloca Reportes al lado.
@@ -81,7 +86,16 @@ public class VentanaPrincipal extends JFrame { // Hereda de JFrame.
         // --- Acciones de cada opción (abren el módulo directamente) ---
         itemGestion.addActionListener(new ActionListener() { // Escucha clic en Gestión de Estudiantes.
             @Override
-            public void actionPerformed(ActionEvent e) { new VentanaGestionEstudiantes(adminLogueado).setVisible(true); } // Abre el módulo de alumnos.
+            public void actionPerformed(ActionEvent e) {
+                new VentanaGestionEstudiantes(adminLogueado).setVisible(true);
+            } // Abre el módulo de alumnos.
+        }); // Fin del listener.
+
+        itemInstituciones.addActionListener(new ActionListener() { // Escucha clic en Gestión de Prepas y Universidades.
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new VentanaGestionInstituciones(adminLogueado).setVisible(true);
+            } // Abre el módulo de planteles.
         }); // Fin del listener.
 
         itemAsistencia.addActionListener(new ActionListener() { // Escucha clic en Registro de Asistencia.
@@ -94,37 +108,51 @@ public class VentanaPrincipal extends JFrame { // Hereda de JFrame.
 
         itemReportes.addActionListener(new ActionListener() { // Escucha clic en Reportes y Excel.
             @Override
-            public void actionPerformed(ActionEvent e) { new VentanaReportes(adminLogueado).setVisible(true); } // Abre el módulo de reportes.
+            public void actionPerformed(ActionEvent e) {
+                new VentanaReportes(adminLogueado).setVisible(true);
+            } // Abre el módulo de reportes.
         }); // Fin del listener.
 
         itemConfig.addActionListener(new ActionListener() { // Escucha clic en configuración.
             @Override
-            public void actionPerformed(ActionEvent e) { new DialogoConfiguracion(VentanaPrincipal.this).setVisible(true); } // Abre el diálogo de configuración.
+            public void actionPerformed(ActionEvent e) {
+                new DialogoConfiguracion(VentanaPrincipal.this).setVisible(true);
+            } // Abre el diálogo de configuración.
         }); // Fin del listener.
 
         itemAdmins.addActionListener(new ActionListener() { // Escucha clic en Gestión de Administradores.
             @Override
-            public void actionPerformed(ActionEvent e) { new VentanaGestionAdministradores(adminLogueado).setVisible(true); } // Abre el módulo de cuentas.
+            public void actionPerformed(ActionEvent e) {
+                new VentanaGestionAdministradores(adminLogueado).setVisible(true);
+            } // Abre el módulo de cuentas.
         }); // Fin del listener.
 
         itemAuditoria.addActionListener(new ActionListener() { // Escucha clic en Visor de Auditoría.
             @Override
-            public void actionPerformed(ActionEvent e) { new VentanaAuditoria().setVisible(true); } // Abre el historial de solo lectura.
+            public void actionPerformed(ActionEvent e) {
+                new VentanaAuditoria().setVisible(true);
+            } // Abre el historial de solo lectura.
         }); // Fin del listener.
 
         itemRespaldo.addActionListener(new ActionListener() { // Escucha clic en Respaldo de Información.
             @Override
-            public void actionPerformed(ActionEvent e) { new DialogoRespaldo(VentanaPrincipal.this).setVisible(true); } // Abre el diálogo de respaldo.
+            public void actionPerformed(ActionEvent e) {
+                new DialogoRespaldo(VentanaPrincipal.this).setVisible(true);
+            } // Abre el diálogo de respaldo.
         }); // Fin del listener.
 
         itemAyuda.addActionListener(new ActionListener() { // Escucha clic en Ayuda.
             @Override
-            public void actionPerformed(ActionEvent e) { new DialogoAyuda(VentanaPrincipal.this).setVisible(true); } // Abre el manual.
+            public void actionPerformed(ActionEvent e) {
+                new DialogoAyuda(VentanaPrincipal.this).setVisible(true);
+            } // Abre el manual.
         }); // Fin del listener.
 
         itemAcerca.addActionListener(new ActionListener() { // Escucha clic en Acerca de.
             @Override
-            public void actionPerformed(ActionEvent e) { new DialogoAcercaDe(VentanaPrincipal.this).setVisible(true); } // Abre el cuadro institucional.
+            public void actionPerformed(ActionEvent e) {
+                new DialogoAcercaDe(VentanaPrincipal.this).setVisible(true);
+            } // Abre el cuadro institucional.
         }); // Fin del listener.
 
         itemCerrar.addActionListener(new ActionListener() { // Escucha clic en Cerrar Sesión.
@@ -136,7 +164,8 @@ public class VentanaPrincipal extends JFrame { // Hereda de JFrame.
         }); // Fin del listener.
 
         // --- Zona central limpia: solo el saludo ---
-        JLabel lblBienvenida = new JLabel("Bienvenido, " + adminLogueado.getNombreCompleto(), JLabel.CENTER); // Saludo personalizado.
+        JLabel lblBienvenida = new JLabel("Bienvenido, " + adminLogueado.getNombreCompleto(), JLabel.CENTER); // Saludo
+                                                                                                              // personalizado.
         lblBienvenida.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 20)); // Fuente destacada.
         add(lblBienvenida, BorderLayout.NORTH); // Saludo arriba; el resto de la ventana queda despejada.
     } // Fin del constructor.
