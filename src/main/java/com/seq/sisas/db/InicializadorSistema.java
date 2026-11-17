@@ -180,6 +180,35 @@ public class InicializadorSistema { // Clase de instalación/arranque de la BD.
                 } // Fin del periodo.
             } // Cierra Statement de migración V8.
 
+            // --- Migración V9: agrega datos de contacto a instituciones sin borrar datos.
+            // ---
+            try (Statement st = con.createStatement()) { // Statement para la migración.
+                java.util.Set<String> cols = new java.util.HashSet<>(); // Columnas actuales.
+                try (ResultSet rs = st.executeQuery("PRAGMA table_info(instituciones)")) { // Lee estructura.
+                    while (rs.next()) {
+                        cols.add(rs.getString("name"));
+                    } // Guarda cada nombre.
+                } // Cierra ResultSet.
+                if (!cols.contains("clave_centro_trabajo")) {
+                    st.executeUpdate("ALTER TABLE instituciones ADD COLUMN clave_centro_trabajo TEXT");
+                } // CCT.
+                if (!cols.contains("direccion")) {
+                    st.executeUpdate("ALTER TABLE instituciones ADD COLUMN direccion TEXT");
+                } // Dirección.
+                if (!cols.contains("codigo_postal")) {
+                    st.executeUpdate("ALTER TABLE instituciones ADD COLUMN codigo_postal TEXT");
+                } // CP.
+                if (!cols.contains("director")) {
+                    st.executeUpdate("ALTER TABLE instituciones ADD COLUMN director TEXT");
+                } // Director o coordinador.
+                if (!cols.contains("telefono")) {
+                    st.executeUpdate("ALTER TABLE instituciones ADD COLUMN telefono TEXT");
+                } // Teléfono.
+                if (!cols.contains("correo")) {
+                    st.executeUpdate("ALTER TABLE instituciones ADD COLUMN correo TEXT");
+                } // Correo.
+            } // Cierra Statement de migración V9.
+
         } // La conexión se cierra automáticamente aquí.
     } // Fin del método inicializar.
 
