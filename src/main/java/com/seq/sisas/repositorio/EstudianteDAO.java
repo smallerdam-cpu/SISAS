@@ -26,9 +26,11 @@ public class EstudianteDAO { // Clase DAO.
 
     // Inserta un nuevo estudiante con todos sus campos.
     public void insertar(Estudiante e) throws SQLException { // Lanza error si falla.
-        String sql = "INSERT INTO estudiantes (nombre_completo, escuela, contacto, fecha_ingreso, horas_requeridas, codigo_unico, curp, fecha_nacimiento, direccion, foto) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; // Query
-                                                                                                                                                                                                                   // INSERT
-                                                                                                                                                                                                                   // completo.
+        String sql = "INSERT INTO estudiantes (nombre_completo, escuela, contacto, fecha_ingreso, horas_requeridas, codigo_unico, curp, fecha_nacimiento, direccion, foto, institucion_id, nivel, tipo_servicio, matricula, especialidad, fecha_fin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; // Query
+                                                                                                                                                                                                                                                                                                               // INSERT
+                                                                                                                                                                                                                                                                                                               // completo.
+        // INSERT
+        // completo.
         try (Connection con = ConexionDB.conectar(); // Abre conexión.
                 PreparedStatement ps = con.prepareStatement(sql)) { // Prepara query.
             ps.setString(1, e.getNombreCompleto()); // Asigna nombre.
@@ -41,6 +43,12 @@ public class EstudianteDAO { // Clase DAO.
             ps.setString(8, e.getFechaNacimiento()); // Asigna fecha nac.
             ps.setString(9, e.getDireccion()); // Asigna dirección.
             ps.setString(10, e.getFoto()); // Asigna nombre de foto (puede ser null).
+            ps.setInt(11, e.getInstitucionId()); // Asigna FK institución.
+            ps.setString(12, e.getNivel()); // Asigna nivel.
+            ps.setString(13, e.getTipoServicio()); // Asigna tipo de servicio.
+            ps.setString(14, e.getMatricula()); // Asigna matrícula.
+            ps.setString(15, e.getEspecialidad()); // Asigna especialidad.
+            ps.setString(16, e.getFechaFin()); // Asigna fin del periodo.
             ps.executeUpdate(); // Ejecuta inserción.
         } // Cierra recursos.
     } // Fin de insertar.
@@ -137,7 +145,8 @@ public class EstudianteDAO { // Clase DAO.
             ps.setString(13, e.getMatricula()); // Nueva matrícula.
             ps.setString(14, e.getEspecialidad()); // Nueva especialidad.
             ps.setString(15, e.getFechaFin()); // Nuevo fin del periodo.
-            ps.setInt(16, e.getId()); // ID a actualizar. // Ejecuta actualización.
+            ps.setInt(16, e.getId()); // ID a actualizar.
+            ps.executeUpdate(); // Ejecuta actualización.
         } // Cierra recursos.
     } // Fin de actualizar.
 
