@@ -18,15 +18,41 @@ import java.util.List; // Interfaz de listas.
 public class InstitucionDAO { // Clase DAO.
     // Inserta una institución nueva con nombre y nivel.
     public void insertar(Institucion inst) throws SQLException { // Lanza error si falla.
-        String sql = "INSERT INTO instituciones (nombre, nivel) VALUES (?, ?)"; // Query INSERT.
+        String sql = "INSERT INTO instituciones (nombre, nivel, clave_centro_trabajo, direccion, codigo_postal, director, telefono, correo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"; // Query
+                                                                                                                                                                              // INSERT.
         try (Connection con = ConexionDB.conectar(); // Abre conexión.
                 PreparedStatement ps = con.prepareStatement(sql)) { // Prepara query.
             ps.setString(1, inst.getNombre()); // Asigna nombre.
             ps.setString(2, inst.getNivel()); // Asigna nivel PREPA o UNIVERSIDAD.
+            ps.setString(3, inst.getClaveCentroTrabajo()); // Asigna CCT.
+            ps.setString(4, inst.getDireccion()); // Asigna dirección.
+            ps.setString(5, inst.getCodigoPostal()); // Asigna CP.
+            ps.setString(6, inst.getDirector()); // Asigna director o coordinador.
+            ps.setString(7, inst.getTelefono()); // Asigna teléfono.
+            ps.setString(8, inst.getCorreo()); // Asigna correo.
             ps.executeUpdate(); // Ejecuta inserción.
         } // Cierra recursos.
     } // Fin de insertar.
       // Devuelve todas las instituciones activas ordenadas por nivel y nombre.
+
+    // Actualiza los datos de una institución existente, incluyendo contacto.
+    public void actualizar(Institucion inst) throws SQLException { // Lanza error si falla.
+        String sql = "UPDATE instituciones SET nombre=?, nivel=?, clave_centro_trabajo=?, direccion=?, codigo_postal=?, director=?, telefono=?, correo=? WHERE id=?"; // Query
+                                                                                                                                                                      // UPDATE.
+        try (Connection con = ConexionDB.conectar(); // Abre conexión.
+                PreparedStatement ps = con.prepareStatement(sql)) { // Prepara query.
+            ps.setString(1, inst.getNombre()); // Nuevo nombre.
+            ps.setString(2, inst.getNivel()); // Nuevo nivel.
+            ps.setString(3, inst.getClaveCentroTrabajo()); // Nuevo CCT.
+            ps.setString(4, inst.getDireccion()); // Nueva dirección.
+            ps.setString(5, inst.getCodigoPostal()); // Nuevo CP.
+            ps.setString(6, inst.getDirector()); // Nuevo director o coordinador.
+            ps.setString(7, inst.getTelefono()); // Nuevo teléfono.
+            ps.setString(8, inst.getCorreo()); // Nuevo correo.
+            ps.setInt(9, inst.getId()); // ID a actualizar.
+            ps.executeUpdate(); // Ejecuta actualización.
+        } // Cierra recursos.
+    } // Fin de actualizar.
 
     public List<Institucion> obtenerTodas() throws SQLException { // Lanza error si falla.
         List<Institucion> lista = new ArrayList<>(); // Lista vacía.
@@ -82,6 +108,12 @@ public class InstitucionDAO { // Clase DAO.
         inst.setNombre(rs.getString("nombre")); // Mapea nombre.
         inst.setNivel(rs.getString("nivel")); // Mapea nivel.
         inst.setActivo(rs.getInt("activo")); // Mapea activo.
+        inst.setClaveCentroTrabajo(rs.getString("clave_centro_trabajo")); // Mapea CCT.
+        inst.setDireccion(rs.getString("direccion")); // Mapea dirección.
+        inst.setCodigoPostal(rs.getString("codigo_postal")); // Mapea CP.
+        inst.setDirector(rs.getString("director")); // Mapea director o coordinador.
+        inst.setTelefono(rs.getString("telefono")); // Mapea teléfono.
+        inst.setCorreo(rs.getString("correo")); // Mapea correo.
         return inst; // Devuelve el objeto lleno.
     } // Fin de mapear.
 } // Fin de la clase InstitucionDAO.
