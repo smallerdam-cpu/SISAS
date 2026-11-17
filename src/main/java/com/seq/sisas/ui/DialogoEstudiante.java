@@ -145,11 +145,26 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
                 cmbNivel.setSelectedItem(existente.getNivel());
             } // Carga nivel.
             cargarEscuelas(); // Recarga escuelas del nivel cargado.
+            boolean escuelaEncontrada = false; // ¿Su escuela está en el catálogo?
             for (Institucion inst : listaEscuelas) {
                 if (inst.getId() == existente.getInstitucionId()) {
-                    cmbEscuela.setSelectedItem(inst);
+                    cmbEscuela.setSelectedItem(inst); // Selecciona su escuela.
+                    escuelaEncontrada = true; // Ya está.
                 }
-            } // Selecciona su escuela.
+            } // Fin de búsqueda.
+            if (!escuelaEncontrada && existente.getEscuela() != null && !existente.getEscuela().isEmpty()) { // Alumno
+                                                                                                             // viejo
+                                                                                                             // sin
+                                                                                                             // catálogo.
+                Institucion vieja = new Institucion(); // Crea plantel temporal solo para mostrar.
+                vieja.setId(existente.getInstitucionId()); // Conserva su ID (0 si no tenía).
+                vieja.setNombre(existente.getEscuela()); // Muestra su escuela escrita.
+                vieja.setNivel((String) cmbNivel.getSelectedItem()); // Nivel actual.
+                vieja.setActivo(1); // Activa.
+                cmbEscuela.addItem(vieja); // Agrega al combo.
+                cmbEscuela.setSelectedItem(vieja); // La selecciona.
+            } // Fin de escuela vieja.
+
             if (existente.getTipoServicio() != null) {
                 cmbTipo.setSelectedItem(existente.getTipoServicio());
             } // Carga tipo.
@@ -419,6 +434,13 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
         String especialidad = txtEspecialidad.getText().trim(); // Lee especialidad.
         String fechaFin = txtFechaFin.getText().trim(); // Lee fecha fin.
         int institucionId = instSel == null ? 0 : instSel.getId(); // ID de la escuela elegida.
+
+        if (instSel == null) { // Sin escuela elegida.
+            JOptionPane.showMessageDialog(this,
+                    "No hay escuelas registradas para este nivel. Primero agréguela en Gestión > Gestión de Prepas y Universidades.",
+                    "Validacion", JOptionPane.WARNING_MESSAGE); // Avisa.
+            return; // Corta ejecución.
+        } // Fin de validación de escuela.
 
         if (nombre.isEmpty() || escuela.isEmpty() || fecha.isEmpty() || horasTexto.isEmpty()) { // Obligatorios básicos.
             JOptionPane.showMessageDialog(this, "Nombre, escuela, fecha de ingreso y horas son obligatorios.",
