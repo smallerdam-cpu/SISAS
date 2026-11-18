@@ -209,6 +209,8 @@ public class InicializadorSistema { // Clase de instalación/arranque de la BD.
                 } // Correo.
             } // Cierra Statement de migración V9.
 
+            System.out.println("SISAS: Migración V9 verificadas (columnasde contacto en instituciones)."); // Confirma V9.
+
         } // La conexión se cierra automáticamente aquí.
     } // Fin del método inicializar.
 
