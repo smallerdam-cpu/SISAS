@@ -19,7 +19,7 @@ import javax.swing.JPanel; // Panel que se dibuja a sí mismo.
 /**
  * PanelHojaReporte (V18): hoja oficial discreta.
  * Los ajustes (horas dobles o descuentos) NO se listan: se absorben en el total.
- * El detalle completo de ajustes vive únicamente en el anexo Excel.
+ * El detalle completo de adsorbe en el total de horas.
  * CONEXIONES:
  * - Es mostrada por com.seq.sisas.ui.DialogoVistaPrevia (pantalla e impresión).
  * - Lee recursos embebidos: /imagenes/logo_seq.png, logo_sep.png, firma_directora.png.
@@ -121,7 +121,7 @@ public class PanelHojaReporte extends JPanel { // Panel con dibujo personalizado
             g2.drawString(a.getEstado(), xs[4], y); // Estado del movimiento.
             y += 16; // Avanza a la siguiente fila.
         } // Fin del recorrido de filas oficiales.
-        if (visibles.size() > MAX_FILAS) { g2.drawString("* Movimientos restantes en el anexo Excel.", 40, y); y += 16; } // Nota si hay más movimientos oficiales.
+        if (visibles.size() > MAX_FILAS) { g2.drawString("* Movimientos restantes no caben en esta hoja.", 40, y); y += 16; } // Nota si hay más movimientos oficiales.
 
         // --- Total del periodo: se calcula con TODOS los movimientos (ajustes absorbidos) ---
         int totalMin = 0; // Acumulador de minutos reales.
@@ -129,7 +129,7 @@ public class PanelHojaReporte extends JPanel { // Panel con dibujo personalizado
         g2.setFont(new Font("Arial", Font.BOLD, 11)); // Fuente de total.
         g2.drawString("TOTAL DEL PERIODO: " + totalMin + " min (" + FormatoHoras.horasMinutos(totalMin / 60.0) + ")", 40, y + 10); // Total humano oficial.
         g2.setFont(new Font("Arial", Font.PLAIN, 8)); // Fuente pequeña de nota al pie.
-        g2.drawString("* El detalle de movimientos y ajustes se encuentra en el anexo Excel.", 40, y + 26); // Remite al cotejo interno sin exhibir ajustes.
+        g2.drawString("* Los ajustes se absorben en el total de horas.", 40, y + 26); // Remite al cotejo interno sin exhibir ajustes.
 
         // --- Bloque de firma de la directora ---
         int centroX = ANCHO / 2; // Centro horizontal de la hoja.
