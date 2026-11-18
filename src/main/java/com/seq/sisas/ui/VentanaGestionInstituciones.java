@@ -60,11 +60,14 @@ public class VentanaGestionInstituciones extends JFrame { // Hereda de JFrame.
         add(scroll, BorderLayout.CENTER); // Tabla al centro.
         JButton btnNuevo = new JButton("Nueva Institución"); // Crea plantel.
         btnNuevo.setPreferredSize(new Dimension(ANCHO_BOTON, ALTO_BOTON)); // Medida fija.
+        JButton btnEditar = new JButton("Editar Institución"); // Edita la seleccionada.
+        btnEditar.setPreferredSize(new Dimension(ANCHO_BOTON, ALTO_BOTON)); // Medida fija.
         JButton btnCerrar = new JButton("Cerrar"); // Cierra la ventana.
         btnCerrar.setPreferredSize(new Dimension(ANCHO_BOTON, ALTO_BOTON)); // Medida fija.
         JPanel panelBotones = new JPanel(new FlowLayout()); // Fila centrada.
         panelBotones.add(btnNuevo); // Agrega nuevo.
-        panelBotones.add(btnCerrar); // Agrega cerrar.
+        panelBotones.add(btnEditar); // Agrega editar.
+        panelBotones.add(btnCerrar); // Agrega cerrar
         add(panelBotones, BorderLayout.SOUTH); // Botones abajo.
         btnNuevo.addActionListener(new ActionListener() { // Clic en Nuevo.
             @Override
@@ -72,6 +75,14 @@ public class VentanaGestionInstituciones extends JFrame { // Hereda de JFrame.
                 crearInstitucion();
             } // Abre formulario de creación.
         }); // Fin del listener.
+
+        btnEditar.addActionListener(new ActionListener() { // Clic en Editar.
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                editarInstitucion();
+            } // Abre formulario de edición.
+        }); // Fin del listener.
+
         btnCerrar.addActionListener(new ActionListener() { // Clic en Cerrar.
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -83,30 +94,88 @@ public class VentanaGestionInstituciones extends JFrame { // Hereda de JFrame.
       // Pide nombre y nivel en un diálogo simple y crea la institución.
 
     private void crearInstitucion() { // Creación rápida.
-        JTextField txtNombre = new JTextField(); // Campo nombre.
+        mostrarFormulario(null); // Abre formulario vacío.
+    } // Fin de crearInstitucion.
+
+    // Edita la institución seleccionada en la tabla.
+    private void editarInstitucion() { // Edición.
+        int fila = tabla.getSelectedRow(); // Fila seleccionada.
+        if (fila < 0) { // Sin selección.
+            JOptionPane.showMessageDialog(this, "Seleccione una institución de la tabla.", "Validacion",
+                    JOptionPane.WARNING_MESSAGE); // Avisa.
+            return; // Corta ejecución.
+        } // Fin de validación.
+        mostrarFormulario(listaActual.get(fila)); // Abre formulario con sus datos.
+    } // Fin de editarInstitucion.
+
+    // Formulario para crear o editar: nombre, nivel y los 6 datos de contacto.
+    private void mostrarFormulario(Institucion existente) { // Formulario compartido.
+        boolean esEdicion = existente != null; // ¿Editar o crear?
+        JTextField txtNombre = new JTextField(esEdicion && existente.getNombre() != null ? existente.getNombre() : ""); // Campo
+                                                                                                                        // nombre.
         JComboBox<String> cmbNivel = new JComboBox<>(new String[] { "PREPA", "UNIVERSIDAD" }); // Lista de nivel.
-        JPanel panel = new JPanel(new GridLayout(2, 2, 5, 5)); // Formulario 2x2.
+        if (esEdicion) {
+            cmbNivel.setSelectedItem(existente.getNivel()); // Nivel actual.
+        } // Pre-llena nivel.
+        JTextField txtCct = new JTextField(
+                esEdicion && existente.getClaveCentroTrabajo() != null ? existente.getClaveCentroTrabajo() : ""); // Campo
+                                                                                                                  // CCT.
+        JTextField txtDireccion = new JTextField(
+                esEdicion && existente.getDireccion() != null ? existente.getDireccion() : ""); // Campo dirección.
+        JTextField txtCp = new JTextField(
+                esEdicion && existente.getCodigoPostal() != null ? existente.getCodigoPostal() : ""); // Campo CP.
+        JTextField txtDirector = new JTextField(
+                esEdicion && existente.getDirector() != null ? existente.getDirector() : ""); // Campo director.
+        JTextField txtTelefono = new JTextField(
+                esEdicion && existente.getTelefono() != null ? existente.getTelefono() : ""); // Campo teléfono.
+        JTextField txtCorreo = new JTextField(esEdicion && existente.getCorreo() != null ? existente.getCorreo() : ""); // Campo
+                                                                                                                        // correo.
+        JPanel panel = new JPanel(new GridLayout(8, 2, 5, 5)); // Formulario 8x2.
         panel.add(new JLabel("Nombre (*):")); // Etiqueta nombre.
         panel.add(txtNombre); // Campo nombre.
         panel.add(new JLabel("Nivel (*):")); // Etiqueta nivel.
         panel.add(cmbNivel); // Lista nivel.
-        int opcion = JOptionPane.showConfirmDialog(this, panel, "Nueva Institución", JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.PLAIN_MESSAGE); // Diálogo con formulario.
+        panel.add(new JLabel("No. centro de trabajo:")); // Etiqueta CCT.
+        panel.add(txtCct); // Campo CCT.
+        panel.add(new JLabel("Dirección:")); // Etiqueta dirección.
+        panel.add(txtDireccion); // Campo dirección.
+        panel.add(new JLabel("CP:")); // Etiqueta CP.
+        panel.add(txtCp); // Campo CP.
+        panel.add(new JLabel("Director o coordinador:")); // Etiqueta director.
+        panel.add(txtDirector); // Campo director.
+        panel.add(new JLabel("No. de la escuela:")); // Etiqueta teléfono.
+        panel.add(txtTelefono); // Campo teléfono.
+        panel.add(new JLabel("Correo electrónico:")); // Etiqueta correo.
+        panel.add(txtCorreo); // Campo correo.
+        int opcion = JOptionPane.showConfirmDialog(this, panel, esEdicion ? "Editar Institución" : "Nueva Institución",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE); // Diálogo con formulario.
         if (opcion != JOptionPane.OK_OPTION) {
             return;
         } // Corta si canceló.
-        try { // Intenta crear.
-            servicio.crear(txtNombre.getText(), (String) cmbNivel.getSelectedItem(), adminLogueado.getId()); // Valida,
-                                                                                                             // guarda y
-                                                                                                             // firma.
-            JOptionPane.showMessageDialog(this, "Institución creada correctamente.", "Éxito",
+        try { // Intenta guardar.
+            Institucion inst = esEdicion ? existente : new Institucion(); // Reusa o crea.
+            inst.setNombre(txtNombre.getText().trim()); // Asigna nombre.
+            inst.setNivel((String) cmbNivel.getSelectedItem()); // Asigna nivel.
+            inst.setClaveCentroTrabajo(txtCct.getText().trim()); // Asigna CCT.
+            inst.setDireccion(txtDireccion.getText().trim()); // Asigna dirección.
+            inst.setCodigoPostal(txtCp.getText().trim()); // Asigna CP.
+            inst.setDirector(txtDirector.getText().trim()); // Asigna director.
+            inst.setTelefono(txtTelefono.getText().trim()); // Asigna teléfono.
+            inst.setCorreo(txtCorreo.getText().trim()); // Asigna correo.
+            if (esEdicion) {
+                servicio.editar(inst, adminLogueado.getId()); // Valida, guarda y firma.
+            } else {
+                servicio.crear(inst, adminLogueado.getId()); // Valida, guarda y firma.
+            } // Fin de guardar.
+            JOptionPane.showMessageDialog(this,
+                    esEdicion ? "Institución actualizada correctamente." : "Institución creada correctamente.", "Éxito",
                     JOptionPane.INFORMATION_MESSAGE); // Confirma.
             cargarDatos(); // Refresca la tabla.
         } catch (Exception ex) { // Captura cualquier error.
             JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); // Muestra
                                                                                                                   // error.
         } // Fin del catch.
-    } // Fin de crearInstitucion.
+    } // Fin de mostrarFormulario.
       // Consulta la BD y rellena la tabla de instituciones.
 
     private void cargarDatos() { // Refresca la tabla.
