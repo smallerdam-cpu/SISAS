@@ -61,7 +61,7 @@ public class DialogoEstudiante extends JDialog { // Hereda de JDialog (modal).
     private JTextField txtEspecialidad; // Campo especialidad (opcional).
     private JTextField txtFechaFin; // Campo fecha fin aaaa-mm-dd (opcional).
     private ServicioInstitucion servicioInstitucion; // Lógica de planteles.
-    private List<Institucion> listaEscuelas; // Lista en memoria sincronizada con cmbEscuela.
+    private List<Institucion> listaEscuelas = new java.util.ArrayList<>(); // Lista en memoria sincronizada con cmbEscuela.
     private JTextField txtCurp; // Campo CURP (obligatorio).
     private JTextField txtFechaNacimiento; // Campo fecha nacimiento (obligatorio).
     private JTextField txtDireccion; // Campo dirección (opcional).
