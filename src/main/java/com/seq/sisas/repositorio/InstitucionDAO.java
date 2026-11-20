@@ -56,8 +56,8 @@ public class InstitucionDAO { // Clase DAO.
 
     public List<Institucion> obtenerTodas() throws SQLException { // Lanza error si falla.
         List<Institucion> lista = new ArrayList<>(); // Lista vacía.
-        String sql = "SELECT id, nombre, nivel, activo FROM instituciones WHERE activo = 1 ORDER BY nivel, nombre"; // Query
-                                                                                                                    // completa.
+        String sql = "SELECT id, nombre, nivel, activo, clave_centro_trabajo, direccion, codigo_postal, director, telefono, correo FROM instituciones WHERE activo = 1 ORDER BY nivel, nombre"; // Query
+        // completa.
         try (Connection con = ConexionDB.conectar(); // Abre conexión.
                 PreparedStatement ps = con.prepareStatement(sql); // Prepara query.
                 ResultSet rs = ps.executeQuery()) { // Ejecuta consulta.
@@ -71,9 +71,9 @@ public class InstitucionDAO { // Clase DAO.
 
     public List<Institucion> obtenerPorNivel(String nivel) throws SQLException { // Lanza error si falla.
         List<Institucion> lista = new ArrayList<>(); // Lista vacía.
-        String sql = "SELECT id, nombre, nivel, activo FROM instituciones WHERE nivel = ? AND activo = 1 ORDER BY nombre"; // Query
-                                                                                                                           // por
-                                                                                                                           // nivel.
+        String sql = "SELECT id, nombre, nivel, activo, clave_centro_trabajo, direccion, codigo_postal, director, telefono, correo FROM instituciones WHERE nivel = ? AND activo = 1 ORDER BY nombre"; // Query
+        // por
+        // nivel.
         try (Connection con = ConexionDB.conectar(); // Abre conexión.
                 PreparedStatement ps = con.prepareStatement(sql)) { // Prepara query.
             ps.setString(1, nivel); // Nivel a filtrar.
@@ -88,7 +88,9 @@ public class InstitucionDAO { // Clase DAO.
       // Devuelve una institución por su ID.
 
     public Institucion obtenerPorId(int id) throws SQLException { // Lanza error si falla.
-        String sql = "SELECT id, nombre, nivel, activo FROM instituciones WHERE id = ?"; // Query por ID.
+        String sql = "SELECT id, nombre, nivel, activo, clave_centro_trabajo, direccion, codigo_postal, director, telefono, correo FROM instituciones WHERE id = ?"; // Query
+                                                                                                                                                                     // por
+                                                                                                                                                                     // ID.
         try (Connection con = ConexionDB.conectar(); // Abre conexión.
                 PreparedStatement ps = con.prepareStatement(sql)) { // Prepara query.
             ps.setInt(1, id); // ID a buscar.

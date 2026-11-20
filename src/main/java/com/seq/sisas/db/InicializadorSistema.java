@@ -207,9 +207,18 @@ public class InicializadorSistema { // Clase de instalación/arranque de la BD.
                 if (!cols.contains("correo")) {
                     st.executeUpdate("ALTER TABLE instituciones ADD COLUMN correo TEXT");
                 } // Correo.
+                cols.clear(); // Limpia para releer.
+                try (ResultSet rs = st.executeQuery("PRAGMA table_info(instituciones)")) { // Relee estructura.
+                    while (rs.next()) {
+                        cols.add(rs.getString("name")); // Guarda cada nombre.
+                    } // Fin del while.
+                } // Cierra ResultSet.
+                System.out.println("SISAS: columnas de instituciones: " + cols); // Muestra columnas reales.
+
             } // Cierra Statement de migración V9.
 
-            System.out.println("SISAS: Migración V9 verificadas (columnasde contacto en instituciones)."); // Confirma V9.
+            System.out.println("SISAS: Migración V9 verificadas (columnasde contacto en instituciones)."); // Confirma
+                                                                                                           // V9.
 
         } // La conexión se cierra automáticamente aquí.
     } // Fin del método inicializar.
