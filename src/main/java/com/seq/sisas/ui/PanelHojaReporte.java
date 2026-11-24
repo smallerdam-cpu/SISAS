@@ -46,8 +46,8 @@ public class PanelHojaReporte extends JPanel { // Panel con dibujo personalizado
         for (Asistencia a : asistencias) { // Recorre todos los movimientos.
             if (!a.getEstado().equals("AJUSTE")) { visibles.add(a); } // Solo entradas/salidas reales en la hoja oficial.
         } // Fin del filtrado discreto.
-        this.logoSeq = cargar("/imagenes/logo_seq.png"); // Carga logo SEQ embebido.
-        this.logoSep = cargar("/imagenes/Logo_Escudo_de_Armas_QRoo.png"); // Carga logo SEP embebido.
+        this.logoSeq = cargar("/imagenes/Logo_Marca_Quintana_Roo.png"); // Carga logo SEQ embebido.
+        this.logoSep = cargar("/imagenes/Logo_Acronimo SEQ_Servicios.png"); // Carga logo SEP embebido. Logo_Marca_Quintana_Roo.png
         this.firma = cargar("/imagenes/firma_directora.png"); // Carga firma embebida.
         setPreferredSize(new Dimension(ANCHO, ALTO)); // Tamaño fijo de hoja.
         setBackground(Color.WHITE); // Fondo blanco tipo papel.
@@ -74,13 +74,16 @@ public class PanelHojaReporte extends JPanel { // Panel con dibujo personalizado
         if (logoSep != null) { g2.drawImage(logoSep, 30, 20, 85, 85, this); } // Logo SEP a la izquierda.
         if (logoSeq != null) { g2.drawImage(logoSeq, ANCHO - 130, 20, 85, 85, this); } // Logo SEQ a la derecha.
 
+        int xIni = 125; // Fin del logo izquierdo + margen.
+        int xFin = ANCHO - 140; // Inicio del logo derecho - margen.
         g2.setColor(Color.BLACK); // Tinta negra.
-        g2.setFont(new Font("Arial", Font.BOLD, 13)); // Fuente del encabezado.
-        textoCentrado(g2, "SERVICIOS EDUCATIVOS DE QUINTANA ROO", 45); // Línea institucional 1.
+        g2.setFont(new Font("Arial", Font.BOLD, 12)); // Fuente del encabezado.
+        textoCentradoZona(g2, "DIRECCIÓN DE INSTITUCIONES", 45, xIni, xFin); // Línea 1, corta arriba.
+        textoCentradoZona(g2, "FORMADORAS DE DOCENTES ZONA NORTE", 63, xIni, xFin); // Línea 2, larga abajo.
         g2.setFont(new Font("Arial", Font.PLAIN, 11)); // Fuente secundaria.
-        textoCentrado(g2, "Departamento de Educación Media Superior y Superior", 63); // Línea institucional 2.
+        textoCentradoZona(g2, "Jefatura de Gestion y Vinculacion Zona Norte", 81, xIni, xFin); // Línea 3.
         g2.setFont(new Font("Arial", Font.BOLD, 15)); // Fuente del título.
-        textoCentrado(g2, "REPORTE DE SERVICIO SOCIAL", 100); // Título del documento.
+        textoCentrado(g2, "REPORTE DE SERVICIO SOCIAL", 115); // Título del documento.
 
         // --- Datos del alumno ---
         g2.setFont(new Font("Arial", Font.PLAIN, 11)); // Fuente de datos.
@@ -146,6 +149,13 @@ public class PanelHojaReporte extends JPanel { // Panel con dibujo personalizado
         if (timestamp != null && timestamp.length() > 10) { return timestamp.substring(11); } // Corta la fecha y deja la hora.
         return timestamp; // Si es corto, lo devuelve igual.
     } // Fin de horaCorta.
+
+    // Dibuja un texto centrado solo entre dos X (zona libre entre los logos).
+    private void textoCentradoZona(Graphics2D g2, String s, int y, int xIni, int xFin) { // Centra en la zona.
+        int anchoZona = xFin - xIni; // Ancho libre entre logos.
+        int x = xIni + (anchoZona - g2.getFontMetrics().stringWidth(s)) / 2; // Calcula X de centrado.
+        g2.drawString(s, x, y); // Dibuja centrado en la zona.
+    } // Fin de textoCentradoZona.
 
     // Dibuja un texto centrado horizontalmente en la hoja.
     private void textoCentrado(Graphics2D g2, String s, int y) { // Centra el texto.
