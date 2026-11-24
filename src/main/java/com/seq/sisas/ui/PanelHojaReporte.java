@@ -71,11 +71,12 @@ public class PanelHojaReporte extends JPanel { // Panel con dibujo personalizado
         g2.setRenderingHint(java.awt.RenderingHints.KEY_TEXT_ANTIALIASING, java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON); // Texto suave.
 
         // --- Encabezado con logos ---
-        if (logoSep != null) { g2.drawImage(logoSep, 30, 20, 85, 85, this); } // Logo SEP a la izquierda.
-        if (logoSeq != null) { g2.drawImage(logoSeq, ANCHO - 130, 20, 85, 85, this); } // Logo SEQ a la derecha.
+        dibujarLogo(g2, logoSep, 30, 30, 45); // Logo SEP a la izquierda, más grande y sin deformar.
+        int anchoSeq = logoSeq == null ? 0 : logoSeq.getWidth() * 75 / logoSeq.getHeight(); // Ancho real del logo derecho.
+        dibujarLogo(g2, logoSeq, ANCHO - -10 - anchoSeq, 30, 45); // Logo SEQ a la derecha, más grande y sin deformar.
 
-        int xIni = 125; // Fin del logo izquierdo + margen.
-        int xFin = ANCHO - 140; // Inicio del logo derecho - margen.
+        int xIni = 160; // Fin del logo izquierdo + margen.
+        int xFin = 481; // Inicio del logo derecho - margen.
         g2.setColor(Color.BLACK); // Tinta negra.
         g2.setFont(new Font("Arial", Font.BOLD, 12)); // Fuente del encabezado.
         textoCentradoZona(g2, "DIRECCIÓN DE INSTITUCIONES", 45, xIni, xFin); // Línea 1, corta arriba.
@@ -162,4 +163,11 @@ public class PanelHojaReporte extends JPanel { // Panel con dibujo personalizado
         int x = (ANCHO - g2.getFontMetrics().stringWidth(s)) / 2; // Calcula X de centrado.
         g2.drawString(s, x, y); // Dibuja centrado.
     } // Fin de textoCentrado.
+
+    // Dibuja un logo conservando su proporción, ajustado a una altura dada.
+    private void dibujarLogo(Graphics2D g2, BufferedImage img, int x, int y, int alto) { // Logo sin deformar.
+        if (img == null) { return; } // Sin imagen, no dibuja nada.
+        int ancho = img.getWidth() * alto / img.getHeight(); // Ancho proporcional a la altura.
+        g2.drawImage(img, x, y, ancho, alto, this); // Dibuja con su proporción real.
+    } // Fin de dibujarLogo.
 } // Fin de la clase PanelHojaReporte.
