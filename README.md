@@ -65,6 +65,7 @@ Tecnologías: Java 17 (Swing), SQLite, Apache POI, ZXing, BCrypt y jpackage.
 matricula, especialidad, fecha_fin. Sin cambios en UI todavía.
 - 2026-11-13: Registro prepa/universidad — Gestión de Prepas y Universidades en el menú Gestión (crear por nombre y nivel); DialogoEstudiante con Nivel PREPA/UNIVERSIDAD, Escuela como lista filtrada por nivel, Tipo SERVICIO_SOCIAL/PRACTICAS_PROFESIONALES solo para UNIVERSIDAD, y campos matrícula, especialidad y fecha fin; la hoja de reporte muestra nivel, tipo, matrícula, especialidad y fecha fin; se quitó Exportar Excel, el reporte queda solo en Vista Previa para imprimir y guardar PDF.
 - 2026-11-20: Gestión de Prepas y Universidades — ahora se pueden editar instituciones y agregarles CCT, dirección, CP, director o coordinador, teléfono y correo (solo en agregar/editar, no en el reporte impreso); corrección del error "no such column: 'clave_centro_trabajo'" al abrir Gestión (los SELECTs del DAO ya piden las 6 columnas de contacto) y del cierre inesperado al dar Editar en Gestión de Estudiantes.
+- 2026-11-24: Reporte oficial — encabezado con dirección y jefatura centrados entre los logos en dos líneas, título un poco más abajo y logos más grandes conservando su proporción.
 
 ## Creador
 
